@@ -1,4 +1,5 @@
 import 'package:elm_fyp/BLoc/application_bloc.dart';
+import 'package:elm_fyp/local_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
@@ -82,6 +83,8 @@ class _LoginState extends State<Login> {
                               onTap: () async {
                                 email.text = "ahabbasi3@gmail.com";
                                 password.text = "Admin@123";
+                                ELMNotification.notify(
+                                    "title", "body", "basic_channel");
                               },
                               child: Container(
                                 padding:
