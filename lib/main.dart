@@ -1,5 +1,6 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:elm_fyp/BLoc/application_bloc.dart';
+import 'package:elm_fyp/Views/admin/admin_nav.dart';
 import 'package:elm_fyp/Views/login_register/login.dart';
 import 'package:elm_fyp/Views/organization/organization_nav.dart';
 import 'package:elm_fyp/Views/splash.dart';
@@ -33,7 +34,7 @@ void main() {
       create: ((context) => ApplicationBloc()),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: Login(),
+        home: Splash(),
       ),
     ),
   );

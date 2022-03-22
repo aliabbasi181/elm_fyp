@@ -1,5 +1,7 @@
 import 'package:elm_fyp/BLoc/application_bloc.dart';
+import 'package:elm_fyp/Views/admin/admin_nav.dart';
 import 'package:elm_fyp/local_notification.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
@@ -81,10 +83,19 @@ class _LoginState extends State<Login> {
                             onTap: () {},
                             child: InkWell(
                               onTap: () async {
-                                email.text = "ahabbasi3@gmail.com";
-                                password.text = "Admin@123";
-                                ELMNotification.notify(
-                                    "title", "body", "basic_channel");
+                                if (email.text == "admin" &&
+                                    password.text == "admin") {
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => AdminNav()),
+                                      (route) => false);
+                                } else {
+                                  email.text = "mtbc@gmail.com";
+                                  password.text = "admin1234";
+                                  applicationBloc.login(
+                                      context, email.text, password.text);
+                                }
                               },
                               child: Container(
                                 padding:
@@ -93,13 +104,20 @@ class _LoginState extends State<Login> {
                                 decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(15)),
-                                child: const Text(
-                                  "Login",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 24,
-                                      color: Colors.black54),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Visibility(
+                                        visible: applicationBloc.loading,
+                                        child: CupertinoActivityIndicator()),
+                                    Text(
+                                        applicationBloc.loading
+                                            ? "Please wait..."
+                                            : "Login",
+                                        textAlign: TextAlign.center,
+                                        style: FontStyle(24, Colors.black54,
+                                            FontWeight.bold)),
+                                  ],
                                 ),
                               ),
                             ),

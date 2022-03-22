@@ -1,54 +1,54 @@
 import 'package:elm_fyp/BLoc/application_bloc.dart';
-import 'package:elm_fyp/Models/EmployeeModel.dart';
+import 'package:elm_fyp/Models/OrganizationModel.dart';
+import 'package:elm_fyp/Views/admin/add_organization.dart';
 import 'package:elm_fyp/Views/constants.dart';
-import 'package:elm_fyp/Views/organization/add_employee.dart';
 import 'package:elm_fyp/Views/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-List<EmployeeModel> employees = [];
+List<OrganizationModel> organizations = [];
 
-class EmployeeList extends StatefulWidget {
-  const EmployeeList({Key? key}) : super(key: key);
+class OrganizationsList extends StatefulWidget {
+  const OrganizationsList({Key? key}) : super(key: key);
 
   @override
   _OrganizationsListState createState() => _OrganizationsListState();
 }
 
-class _OrganizationsListState extends State<EmployeeList> {
+class _OrganizationsListState extends State<OrganizationsList> {
   List<dynamic> data = [];
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  List<EmployeeModel> searchResults = [];
+  List<OrganizationModel> searchResults = [];
 
   @override
   initState() {
-    _getEmployees();
+    _getOrganizations();
     super.initState();
   }
 
-  _getEmployees() async {
-    employees = [];
+  _getOrganizations() async {
+    organizations = [];
     final applicationBloc =
         Provider.of<ApplicationBloc>(context, listen: false);
     await Future.delayed(const Duration(milliseconds: 500), () {});
-    data = await applicationBloc.getEmployees();
+    data = await applicationBloc.getOrganizations();
     for (var item in data) {
-      employees.add(EmployeeModel(
+      organizations.add(OrganizationModel(
           sId: item['_id'],
           name: item['name'],
           email: item['email'],
-          cnic: item['cnic'],
+          address: item['address'],
           role: item['role'],
           phone: item['phone']));
     }
-    employees = List.from(employees.reversed);
+    organizations = List.from(organizations.reversed);
   }
 
   void _onRefresh() async {
-    await _getEmployees();
+    await _getOrganizations();
     _refreshController.refreshCompleted();
   }
 
@@ -56,11 +56,12 @@ class _OrganizationsListState extends State<EmployeeList> {
     final applicationBloc =
         Provider.of<ApplicationBloc>(context, listen: false);
     if (await applicationBloc.deleteOrganization(id)) {
-      Constants.showSnackBar(context, "Employee successfully deleted...", true);
+      Constants.showSnackBar(
+          context, "Organization successfully deleted...", true);
       //await Future.delayed(const Duration(milliseconds: 500), () {});
       return true;
     } else {
-      Constants.showSnackBar(context, "Error deleting employee...", false);
+      Constants.showSnackBar(context, "Error deleting organization...", false);
       //await Future.delayed(const Duration(milliseconds: 500), () {});
       return false;
     }
@@ -108,7 +109,7 @@ class _OrganizationsListState extends State<EmployeeList> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Org: Employee Location Management",
+                            Text("Admin: Employee Location Management",
                                 textAlign: TextAlign.start,
                                 style: FontStyle(
                                     14, Colors.white, FontWeight.w400)),
@@ -116,14 +117,14 @@ class _OrganizationsListState extends State<EmployeeList> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "All Employees",
+                                  "All Organizations",
                                   style: FontStyle(
                                       30, Colors.white, FontWeight.bold),
                                 ),
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   child: Icon(
-                                    Icons.people_outline,
+                                    Icons.map_outlined,
                                     color: Constants.primaryColor,
                                     size: 20,
                                   ),
@@ -158,7 +159,7 @@ class _OrganizationsListState extends State<EmployeeList> {
                                             return;
                                           }
                                           searchResults = [];
-                                          for (var item in employees) {
+                                          for (var item in organizations) {
                                             if (item.name!
                                                 .toLowerCase()
                                                 .contains(
@@ -195,7 +196,7 @@ class _OrganizationsListState extends State<EmployeeList> {
                     ),
                     Visibility(
                       visible:
-                          employees.length == 0 && !applicationBloc.loading,
+                          organizations.length == 0 && !applicationBloc.loading,
                       child: Container(
                           height: Constants.screenHeight(context) * 0.59,
                           child: Center(
@@ -206,14 +207,15 @@ class _OrganizationsListState extends State<EmployeeList> {
                           )),
                     ),
                     Visibility(
-                        visible: employees.length > 0 && searchResults.isEmpty,
+                        visible:
+                            organizations.length > 0 && searchResults.isEmpty,
                         child: Container(
                           height: Constants.screenHeight(context) * 0.59,
                           child: SmartRefresher(
                             onRefresh: () => _onRefresh(),
                             controller: _refreshController,
                             child: ListView.builder(
-                              itemCount: employees.length,
+                              itemCount: organizations.length,
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {},
@@ -236,11 +238,15 @@ class _OrganizationsListState extends State<EmployeeList> {
                                     ),
                                     child: ListTile(
                                         subtitle: Text(
-                                            employees[index].email.toString(),
-                                            style: FontStyle(12, Colors.black38,
+                                            organizations[index]
+                                                .email
+                                                .toString(),
+                                            style: FontStyle(14, Colors.black38,
                                                 FontWeight.w400)),
                                         title: Text(
-                                            employees[index].name.toString(),
+                                            organizations[index]
+                                                .name
+                                                .toString(),
                                             style: FontStyle(
                                                 20,
                                                 Constants.primaryColor,
@@ -254,57 +260,35 @@ class _OrganizationsListState extends State<EmployeeList> {
                                                 builder: (context) =>
                                                     CupertinoActionSheet(
                                                       actions: [
-                                                        CupertinoActionSheetAction(
-                                                          onPressed: () async {
-                                                            setState(() {
-                                                              employees.removeWhere(
-                                                                  (element) =>
+                                                        CupertinoButton(
+                                                            color: Colors.red,
+                                                            child: Text(
+                                                              "Delete",
+                                                              style: FontStyle(
+                                                                  24,
+                                                                  Colors.white,
+                                                                  FontWeight
+                                                                      .w400),
+                                                            ),
+                                                            onPressed:
+                                                                () async {
+                                                              Navigator.pop(
+                                                                  context);
+                                                              if (await _onDelete(
+                                                                  organizations[
+                                                                          index]
+                                                                      .sId
+                                                                      .toString())) {
+                                                                setState(() {
+                                                                  organizations.removeWhere((element) =>
                                                                       element
                                                                           .sId ==
-                                                                      employees[
+                                                                      organizations[
                                                                               index]
                                                                           .sId);
-                                                            });
-                                                            Navigator.pop(
-                                                                context);
-                                                            // if (await _onDelete(
-                                                            //     employees[index]
-                                                            //         .sId
-                                                            //         .toString())) {
-
-                                                            // }
-                                                          },
-                                                          child: Text(
-                                                            "Delete",
-                                                            style: FontStyle(
-                                                                18,
-                                                                Colors.red,
-                                                                FontWeight
-                                                                    .w400),
-                                                          ),
-                                                        ),
-                                                        CupertinoActionSheetAction(
-                                                          onPressed: () {},
-                                                          child: Text(
-                                                            "Edit",
-                                                            style: FontStyle(
-                                                                18,
-                                                                Colors.black,
-                                                                FontWeight
-                                                                    .w400),
-                                                          ),
-                                                        ),
-                                                        CupertinoActionSheetAction(
-                                                          onPressed: () {},
-                                                          child: Text(
-                                                            "Assign Fence",
-                                                            style: FontStyle(
-                                                                18,
-                                                                Colors.black,
-                                                                FontWeight
-                                                                    .w400),
-                                                          ),
-                                                        ),
+                                                                });
+                                                              }
+                                                            })
                                                       ],
                                                       cancelButton:
                                                           CupertinoActionSheetAction(
@@ -318,9 +302,9 @@ class _OrganizationsListState extends State<EmployeeList> {
                                                     ));
                                           },
                                           child: const Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            size: 24,
-                                            color: Colors.black87,
+                                            CupertinoIcons.delete,
+                                            size: 20,
+                                            color: Colors.red,
                                           ),
                                         )),
                                   ),
@@ -330,8 +314,8 @@ class _OrganizationsListState extends State<EmployeeList> {
                           ),
                         )),
                     Visibility(
-                        visible:
-                            employees.length > 0 && searchResults.isNotEmpty,
+                        visible: organizations.length > 0 &&
+                            searchResults.isNotEmpty,
                         child: Container(
                           height: Constants.screenHeight(context) * 0.59,
                           child: ListView.builder(
@@ -358,7 +342,7 @@ class _OrganizationsListState extends State<EmployeeList> {
                                   ),
                                   child: ListTile(
                                       subtitle: Text(
-                                          employees[index].email.toString(),
+                                          organizations[index].email.toString(),
                                           style: FontStyle(12, Colors.black38,
                                               FontWeight.w400)),
                                       title: Text(
@@ -376,62 +360,40 @@ class _OrganizationsListState extends State<EmployeeList> {
                                               builder: (context) =>
                                                   CupertinoActionSheet(
                                                     actions: [
-                                                      CupertinoActionSheetAction(
-                                                        onPressed: () async {
-                                                          setState(() {
-                                                            searchResults.removeWhere(
-                                                                (element) =>
+                                                      CupertinoButton(
+                                                          color: Colors.red,
+                                                          child: Text(
+                                                            "Delete",
+                                                            style: FontStyle(
+                                                                24,
+                                                                Colors.white,
+                                                                FontWeight
+                                                                    .w400),
+                                                          ),
+                                                          onPressed: () async {
+                                                            Navigator.pop(
+                                                                context);
+                                                            if (await _onDelete(
+                                                                searchResults[
+                                                                        index]
+                                                                    .sId
+                                                                    .toString())) {
+                                                              setState(() {
+                                                                searchResults.removeWhere((element) =>
                                                                     element
                                                                         .sId ==
                                                                     searchResults[
                                                                             index]
                                                                         .sId);
-                                                            employees.removeWhere(
-                                                                (element) =>
+                                                                organizations.removeWhere((element) =>
                                                                     element
                                                                         .sId ==
-                                                                    employees[
+                                                                    organizations[
                                                                             index]
                                                                         .sId);
-                                                          });
-                                                          Navigator.pop(
-                                                              context);
-                                                          // if (await _onDelete(
-                                                          //     searchResults[
-                                                          //             index]
-                                                          //         .sId
-                                                          //         .toString())) {
-
-                                                          // }
-                                                        },
-                                                        child: Text(
-                                                          "Delete",
-                                                          style: FontStyle(
-                                                              18,
-                                                              Colors.red,
-                                                              FontWeight.w400),
-                                                        ),
-                                                      ),
-                                                      CupertinoActionSheetAction(
-                                                        onPressed: () {},
-                                                        child: Text(
-                                                          "Edit",
-                                                          style: FontStyle(
-                                                              18,
-                                                              Colors.black,
-                                                              FontWeight.w400),
-                                                        ),
-                                                      ),
-                                                      CupertinoActionSheetAction(
-                                                        onPressed: () {},
-                                                        child: Text(
-                                                          "Assign Fence",
-                                                          style: FontStyle(
-                                                              18,
-                                                              Colors.black,
-                                                              FontWeight.w400),
-                                                        ),
-                                                      ),
+                                                              });
+                                                            }
+                                                          })
                                                     ],
                                                     cancelButton:
                                                         CupertinoActionSheetAction(
@@ -444,9 +406,9 @@ class _OrganizationsListState extends State<EmployeeList> {
                                                   ));
                                         },
                                         child: const Icon(
-                                          Icons.keyboard_arrow_down_rounded,
-                                          size: 24,
-                                          color: Colors.black87,
+                                          CupertinoIcons.delete,
+                                          size: 20,
+                                          color: Colors.red,
                                         ),
                                       )),
                                 ),
@@ -458,12 +420,12 @@ class _OrganizationsListState extends State<EmployeeList> {
                 ),
               ),
               NavBox(
-                buttonText: "Add Employee",
+                buttonText: "Add Organization",
                 onPress: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const AddEmployee()));
+                          builder: (context) => const AddOrganization()));
                 },
               ),
             ],
@@ -472,53 +434,89 @@ class _OrganizationsListState extends State<EmployeeList> {
   }
 }
 
+class MyListTileOrg extends StatefulWidget {
+  VoidCallback onPress;
+  OrganizationModel organization;
+  MyListTileOrg({
+    Key? key,
+    required this.organization,
+    required this.onPress,
+  }) : super(key: key);
 
-// await showCupertinoModalPopup(
-//                                                 barrierColor: Colors.black
-//                                                     .withOpacity(0.5),
-//                                                 context: context,
-//                                                 builder: (context) =>
-//                                                     CupertinoActionSheet(
-//                                                       actions: [
-//                                                         CupertinoButton(
-//                                                             color: Colors.red,
-//                                                             child: Text(
-//                                                               "Delete",
-//                                                               style: FontStyle(
-//                                                                   24,
-//                                                                   Colors.white,
-//                                                                   FontWeight
-//                                                                       .w400),
-//                                                             ),
-//                                                             onPressed:
-//                                                                 () async {
-//                                                               Navigator.pop(
-//                                                                   context);
-//                                                               if (await _onDelete(
-//                                                                   employees[
-//                                                                           index]
-//                                                                       .sId
-//                                                                       .toString())) {
-//                                                                 setState(() {
-//                                                                   employees.removeWhere((element) =>
-//                                                                       element
-//                                                                           .sId ==
-//                                                                       employees[
-//                                                                               index]
-//                                                                           .sId);
-//                                                                 });
-//                                                               }
-//                                                             })
-//                                                       ],
-//                                                       cancelButton:
-//                                                           CupertinoActionSheetAction(
-//                                                         onPressed: () {
-//                                                           Navigator.pop(
-//                                                               context);
-//                                                         },
-//                                                         child: const Text(
-//                                                             "Cancel"),
-//                                                       ),
-//                                                     ));
+  @override
+  _MyListTileOrgState createState() => _MyListTileOrgState();
+}
 
+class _MyListTileOrgState extends State<MyListTileOrg> {
+  @override
+  void initState() {
+    print(widget.organization.sId);
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: widget.onPress,
+      child: Container(
+        padding: const EdgeInsets.only(left: 20, right: 10, top: 5, bottom: 5),
+        margin: const EdgeInsets.only(top: 10, left: 30, right: 30),
+        decoration: BoxDecoration(
+          color: const Color.fromRGBO(255, 255, 255, 1),
+          borderRadius: BorderRadius.circular(15),
+          gradient: LinearGradient(stops: const [
+            0.015,
+            0.01
+          ], colors: [
+            Constants.primaryColor,
+            const Color.fromRGBO(255, 255, 255, 0.7)
+          ]),
+        ),
+        child: ListTile(
+            // subtitle: Text(
+            //   widget.employees,
+            //   style:
+            //       TextStyle(color: Colors.green, fontWeight: FontWeight.w500),
+            // ),
+            title: Text(widget.organization.name.toString(),
+                style: FontStyle(20, Constants.primaryColor, FontWeight.w500)),
+            trailing: InkWell(
+              onTap: () {
+                showCupertinoModalPopup(
+                    barrierColor: Colors.black.withOpacity(0.5),
+                    context: context,
+                    builder: (context) => CupertinoActionSheet(
+                          actions: [
+                            CupertinoButton(
+                                color: Colors.red,
+                                child: Text(
+                                  "Delete",
+                                  style: FontStyle(
+                                      24, Colors.white, FontWeight.w400),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    organizations.removeWhere((element) =>
+                                        element.sId == widget.organization.sId);
+                                  });
+                                  Navigator.pop(context);
+                                })
+                          ],
+                          cancelButton: CupertinoActionSheetAction(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text("Cancel"),
+                          ),
+                        ));
+              },
+              child: const Icon(
+                CupertinoIcons.delete,
+                size: 20,
+                color: Colors.red,
+              ),
+            )),
+      ),
+    );
+  }
+}

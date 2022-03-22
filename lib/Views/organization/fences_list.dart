@@ -1,54 +1,55 @@
 import 'package:elm_fyp/BLoc/application_bloc.dart';
-import 'package:elm_fyp/Models/EmployeeModel.dart';
+import 'package:elm_fyp/Models/FenceModel.dart';
 import 'package:elm_fyp/Views/constants.dart';
-import 'package:elm_fyp/Views/organization/add_employee.dart';
+import 'package:elm_fyp/Views/organization/create_fence.dart';
+import 'package:elm_fyp/Views/organization/fence_details.dart';
 import 'package:elm_fyp/Views/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-List<EmployeeModel> employees = [];
+List<FenceModel> fences = [];
 
-class EmployeeList extends StatefulWidget {
-  const EmployeeList({Key? key}) : super(key: key);
+class FencesList extends StatefulWidget {
+  const FencesList({Key? key}) : super(key: key);
 
   @override
   _OrganizationsListState createState() => _OrganizationsListState();
 }
 
-class _OrganizationsListState extends State<EmployeeList> {
+class _OrganizationsListState extends State<FencesList> {
   List<dynamic> data = [];
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  List<EmployeeModel> searchResults = [];
+  List<FenceModel> searchResults = [];
 
   @override
   initState() {
-    _getEmployees();
+    _getFences();
     super.initState();
   }
 
-  _getEmployees() async {
-    employees = [];
+  _getFences() async {
+    fences = [];
     final applicationBloc =
         Provider.of<ApplicationBloc>(context, listen: false);
     await Future.delayed(const Duration(milliseconds: 500), () {});
-    data = await applicationBloc.getEmployees();
+    data = await applicationBloc.getFences();
+    List<Points> points = [];
     for (var item in data) {
-      employees.add(EmployeeModel(
-          sId: item['_id'],
-          name: item['name'],
-          email: item['email'],
-          cnic: item['cnic'],
-          role: item['role'],
-          phone: item['phone']));
+      points = [];
+      for (var item in item['points']) {
+        points.add(Points(lat: item['lat'], lng: item['lng']));
+      }
+      fences.add(FenceModel(name: item['name'], points: points));
     }
-    employees = List.from(employees.reversed);
+    setState(() {});
   }
 
   void _onRefresh() async {
-    await _getEmployees();
+    await _getFences();
     _refreshController.refreshCompleted();
   }
 
@@ -116,14 +117,14 @@ class _OrganizationsListState extends State<EmployeeList> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "All Employees",
+                                  "All Fences",
                                   style: FontStyle(
                                       30, Colors.white, FontWeight.bold),
                                 ),
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   child: Icon(
-                                    Icons.people_outline,
+                                    Icons.map_outlined,
                                     color: Constants.primaryColor,
                                     size: 20,
                                   ),
@@ -158,7 +159,7 @@ class _OrganizationsListState extends State<EmployeeList> {
                                             return;
                                           }
                                           searchResults = [];
-                                          for (var item in employees) {
+                                          for (var item in fences) {
                                             if (item.name!
                                                 .toLowerCase()
                                                 .contains(
@@ -194,8 +195,7 @@ class _OrganizationsListState extends State<EmployeeList> {
                           ))),
                     ),
                     Visibility(
-                      visible:
-                          employees.length == 0 && !applicationBloc.loading,
+                      visible: fences.length == 0 && !applicationBloc.loading,
                       child: Container(
                           height: Constants.screenHeight(context) * 0.59,
                           child: Center(
@@ -206,14 +206,14 @@ class _OrganizationsListState extends State<EmployeeList> {
                           )),
                     ),
                     Visibility(
-                        visible: employees.length > 0 && searchResults.isEmpty,
+                        visible: fences.length > 0 && searchResults.isEmpty,
                         child: Container(
                           height: Constants.screenHeight(context) * 0.59,
                           child: SmartRefresher(
                             onRefresh: () => _onRefresh(),
                             controller: _refreshController,
                             child: ListView.builder(
-                              itemCount: employees.length,
+                              itemCount: fences.length,
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {},
@@ -235,12 +235,17 @@ class _OrganizationsListState extends State<EmployeeList> {
                                       ]),
                                     ),
                                     child: ListTile(
-                                        subtitle: Text(
-                                            employees[index].email.toString(),
-                                            style: FontStyle(12, Colors.black38,
-                                                FontWeight.w400)),
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      FenceDetail(
+                                                          fence:
+                                                              fences[index])));
+                                        },
                                         title: Text(
-                                            employees[index].name.toString(),
+                                            fences[index].name.toString(),
                                             style: FontStyle(
                                                 20,
                                                 Constants.primaryColor,
@@ -257,12 +262,11 @@ class _OrganizationsListState extends State<EmployeeList> {
                                                         CupertinoActionSheetAction(
                                                           onPressed: () async {
                                                             setState(() {
-                                                              employees.removeWhere(
+                                                              fences.removeWhere(
                                                                   (element) =>
                                                                       element
                                                                           .sId ==
-                                                                      employees[
-                                                                              index]
+                                                                      fences[index]
                                                                           .sId);
                                                             });
                                                             Navigator.pop(
@@ -330,8 +334,7 @@ class _OrganizationsListState extends State<EmployeeList> {
                           ),
                         )),
                     Visibility(
-                        visible:
-                            employees.length > 0 && searchResults.isNotEmpty,
+                        visible: fences.length > 0 && searchResults.isNotEmpty,
                         child: Container(
                           height: Constants.screenHeight(context) * 0.59,
                           child: ListView.builder(
@@ -357,10 +360,14 @@ class _OrganizationsListState extends State<EmployeeList> {
                                     ]),
                                   ),
                                   child: ListTile(
-                                      subtitle: Text(
-                                          employees[index].email.toString(),
-                                          style: FontStyle(12, Colors.black38,
-                                              FontWeight.w400)),
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    FenceDetail(
+                                                        fence: fences[index])));
+                                      },
                                       title: Text(
                                           searchResults[index].name.toString(),
                                           style: FontStyle(
@@ -386,12 +393,11 @@ class _OrganizationsListState extends State<EmployeeList> {
                                                                     searchResults[
                                                                             index]
                                                                         .sId);
-                                                            employees.removeWhere(
+                                                            fences.removeWhere(
                                                                 (element) =>
                                                                     element
                                                                         .sId ==
-                                                                    employees[
-                                                                            index]
+                                                                    fences[index]
                                                                         .sId);
                                                           });
                                                           Navigator.pop(
@@ -458,12 +464,12 @@ class _OrganizationsListState extends State<EmployeeList> {
                 ),
               ),
               NavBox(
-                buttonText: "Add Employee",
+                buttonText: "Add new fence",
                 onPress: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const AddEmployee()));
+                          builder: (context) => const CreateFence()));
                 },
               ),
             ],
@@ -471,54 +477,3 @@ class _OrganizationsListState extends State<EmployeeList> {
     );
   }
 }
-
-
-// await showCupertinoModalPopup(
-//                                                 barrierColor: Colors.black
-//                                                     .withOpacity(0.5),
-//                                                 context: context,
-//                                                 builder: (context) =>
-//                                                     CupertinoActionSheet(
-//                                                       actions: [
-//                                                         CupertinoButton(
-//                                                             color: Colors.red,
-//                                                             child: Text(
-//                                                               "Delete",
-//                                                               style: FontStyle(
-//                                                                   24,
-//                                                                   Colors.white,
-//                                                                   FontWeight
-//                                                                       .w400),
-//                                                             ),
-//                                                             onPressed:
-//                                                                 () async {
-//                                                               Navigator.pop(
-//                                                                   context);
-//                                                               if (await _onDelete(
-//                                                                   employees[
-//                                                                           index]
-//                                                                       .sId
-//                                                                       .toString())) {
-//                                                                 setState(() {
-//                                                                   employees.removeWhere((element) =>
-//                                                                       element
-//                                                                           .sId ==
-//                                                                       employees[
-//                                                                               index]
-//                                                                           .sId);
-//                                                                 });
-//                                                               }
-//                                                             })
-//                                                       ],
-//                                                       cancelButton:
-//                                                           CupertinoActionSheetAction(
-//                                                         onPressed: () {
-//                                                           Navigator.pop(
-//                                                               context);
-//                                                         },
-//                                                         child: const Text(
-//                                                             "Cancel"),
-//                                                       ),
-//                                                     ));
-
-

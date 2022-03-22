@@ -1,42 +1,23 @@
+import 'package:elm_fyp/Views/admin/admin_profile.dart';
+import 'package:elm_fyp/Views/admin/organizations_list.dart';
 import 'package:elm_fyp/Views/constants.dart';
-import 'package:elm_fyp/Views/organization/employee_list.dart';
-import 'package:elm_fyp/Views/organization/organization_notification.dart';
-import 'package:elm_fyp/Views/organization/organization_profile.dart';
-import 'package:elm_fyp/Views/organization/fences_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:ionicons/ionicons.dart';
 
-const List<Widget> _screens = <Widget>[
-  EmployeeList(),
-  FencesList(),
-  OrganizationNotification(),
-  OrganizationProfile()
-];
+const List<Widget> _screens = <Widget>[OrganizationsList(), AdminProfile()];
 
 int _selectedIndex = 0;
 
-class OrganizationNav extends StatefulWidget {
-  int initRoute = -1;
-  OrganizationNav(this.initRoute, {Key? key}) : super(key: key);
+class AdminNav extends StatefulWidget {
+  AdminNav({Key? key}) : super(key: key);
 
   @override
-  _OrganizationNavState createState() => _OrganizationNavState();
+  _AdminNavState createState() => _AdminNavState();
 }
 
-class _OrganizationNavState extends State<OrganizationNav> {
-  late PageController _pageController;
+class _AdminNavState extends State<AdminNav> {
+  PageController _pageController = PageController();
   @override
-  initState() {
-    super.initState();
-    _selectedIndex = widget.initRoute;
-    if (widget.initRoute != -1) {
-      _pageController = PageController(initialPage: widget.initRoute);
-    } else {
-      _pageController = PageController(initialPage: 1);
-    }
-  }
-
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -58,28 +39,20 @@ class _OrganizationNavState extends State<OrganizationNav> {
             border: Border(top: BorderSide(color: Colors.white))),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.only(bottom: 8, left: 8, right: 8, top: 8),
+            padding: EdgeInsets.only(bottom: 8, top: 8),
             child: GNav(
               backgroundColor: Constants.primaryColor,
               rippleColor: Colors.grey[300]!,
               hoverColor: Colors.grey[100]!,
               activeColor: Colors.black,
               iconSize: 24,
+              mainAxisAlignment: MainAxisAlignment.center,
               gap: 5,
               // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               duration: const Duration(milliseconds: 400),
               tabBackgroundColor: Colors.grey[100]!,
               color: Constants.primaryColor,
               tabs: [
-                // GButton(
-                //   borderRadius: BorderRadius.circular(15),
-                //   backgroundColor: Constants.pinkColor,
-                //   iconActiveColor: Colors.white,
-                //   padding: const EdgeInsets.fromLTRB(15, 15, 0, 15),
-                //   icon: Icons.near_me_rounded,
-                //   iconSize: 30,
-                //   text: '',
-                // ),
                 GButton(
                   borderRadius: BorderRadius.circular(15),
                   backgroundColor: Colors.white,
@@ -89,26 +62,8 @@ class _OrganizationNavState extends State<OrganizationNav> {
                   icon: Icons.groups_rounded,
                   iconSize: 25,
                   text: '',
+                  margin: const EdgeInsets.only(right: 10),
                 ),
-                GButton(
-                  borderRadius: BorderRadius.circular(15),
-                  backgroundColor: Colors.white,
-                  iconColor: Colors.white,
-                  iconActiveColor: Constants.primaryColor,
-                  padding: const EdgeInsets.fromLTRB(12, 10, 0, 10),
-                  icon: Ionicons.home,
-                  text: '',
-                ),
-                GButton(
-                  borderRadius: BorderRadius.circular(15),
-                  backgroundColor: Colors.white,
-                  iconColor: Colors.white,
-                  iconActiveColor: Constants.primaryColor,
-                  padding: const EdgeInsets.fromLTRB(12, 10, 0, 10),
-                  icon: Ionicons.notifications,
-                  text: '',
-                ),
-
                 GButton(
                   borderRadius: BorderRadius.circular(15),
                   backgroundColor: Colors.white,
@@ -117,6 +72,7 @@ class _OrganizationNavState extends State<OrganizationNav> {
                   padding: const EdgeInsets.fromLTRB(12, 10, 0, 10),
                   icon: Icons.settings,
                   text: '',
+                  margin: const EdgeInsets.only(left: 10),
                 ),
               ],
               selectedIndex: _selectedIndex,
