@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:elm_fyp/SharedPreferences/local_storage.dart';
 import 'package:elm_fyp/Views/constants.dart';
 import 'package:elm_fyp/Views/employee/home.dart';
 import 'package:elm_fyp/Views/organization/organization_nav.dart';
@@ -15,6 +16,7 @@ class AuthController {
           var json = response.data['data'];
           Constants.USER_TOKEN = json['token'];
           Constants.setAuthentication();
+          LocalStorage.setCredentials(email, password, json['_id']);
           if (json['role'] == "organization") {
             Navigator.pushAndRemoveUntil(
                 context,

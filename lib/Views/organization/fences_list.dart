@@ -6,7 +6,6 @@ import 'package:elm_fyp/Views/organization/fence_details.dart';
 import 'package:elm_fyp/Views/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -32,12 +31,13 @@ class _OrganizationsListState extends State<FencesList> {
   }
 
   _getFences() async {
-    fences = [];
     final applicationBloc =
         Provider.of<ApplicationBloc>(context, listen: false);
+    data = [];
     await Future.delayed(const Duration(milliseconds: 500), () {});
     data = await applicationBloc.getFences();
     List<Points> points = [];
+    fences = [];
     for (var item in data) {
       points = [];
       for (var item in item['points']) {
@@ -146,10 +146,10 @@ class _OrganizationsListState extends State<FencesList> {
                                     child: TextField(
                                       cursorColor: Constants.primaryColor,
                                       style: FontStyle(
-                                          18, Colors.black54, FontWeight.w400),
+                                          16, Colors.black54, FontWeight.w400),
                                       decoration: InputDecoration(
                                           hintText: "Search...",
-                                          hintStyle: FontStyle(18,
+                                          hintStyle: FontStyle(16,
                                               Colors.black26, FontWeight.w400),
                                           border: InputBorder.none),
                                       onChanged: (value) {
@@ -161,6 +161,7 @@ class _OrganizationsListState extends State<FencesList> {
                                           searchResults = [];
                                           for (var item in fences) {
                                             if (item.name!
+                                                .toString()
                                                 .toLowerCase()
                                                 .contains(
                                                     value.toLowerCase())) {
@@ -179,7 +180,7 @@ class _OrganizationsListState extends State<FencesList> {
                               ),
                               decoration: BoxDecoration(
                                   color: Colors.white,
-                                  borderRadius: BorderRadius.circular(15)),
+                                  borderRadius: BorderRadius.circular(10)),
                             ),
                           ],
                         ),
@@ -216,117 +217,135 @@ class _OrganizationsListState extends State<FencesList> {
                               itemCount: fences.length,
                               itemBuilder: (context, index) {
                                 return InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => FenceDetail(
+                                                fence: fences[index])));
+                                  },
                                   child: Container(
                                     padding: const EdgeInsets.only(
-                                        left: 20, right: 10, top: 5, bottom: 5),
+                                        left: 20,
+                                        right: 10,
+                                        top: 15,
+                                        bottom: 15),
                                     margin: const EdgeInsets.only(
-                                        top: 10, left: 30, right: 30),
+                                        top: 12, left: 30, right: 30),
                                     decoration: BoxDecoration(
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Colors.black,
+                                            blurRadius: 1.5)
+                                      ],
                                       color: const Color.fromRGBO(
                                           255, 255, 255, 1),
-                                      borderRadius: BorderRadius.circular(15),
+                                      borderRadius: BorderRadius.circular(10),
                                       gradient: LinearGradient(stops: const [
                                         0.015,
                                         0.01
                                       ], colors: [
                                         Constants.primaryColor,
-                                        const Color.fromRGBO(255, 255, 255, 0.7)
+                                        const Color.fromRGBO(255, 255, 255, 1)
                                       ]),
                                     ),
-                                    child: ListTile(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      FenceDetail(
-                                                          fence:
-                                                              fences[index])));
-                                        },
-                                        title: Text(
-                                            fences[index].name.toString(),
-                                            style: FontStyle(
-                                                20,
-                                                Constants.primaryColor,
-                                                FontWeight.w500)),
-                                        trailing: InkWell(
-                                          onTap: () async {
-                                            await showCupertinoModalPopup(
-                                                barrierColor: Colors.black
-                                                    .withOpacity(0.5),
-                                                context: context,
-                                                builder: (context) =>
-                                                    CupertinoActionSheet(
-                                                      actions: [
-                                                        CupertinoActionSheetAction(
-                                                          onPressed: () async {
-                                                            setState(() {
-                                                              fences.removeWhere(
-                                                                  (element) =>
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                                child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                    fences[index]
+                                                        .name
+                                                        .toString(),
+                                                    style: FontStyle(
+                                                        20,
+                                                        Constants.primaryColor,
+                                                        FontWeight.w500)),
+                                              ],
+                                            )),
+                                            InkWell(
+                                              onTap: () async {
+                                                await showCupertinoModalPopup(
+                                                    barrierColor: Colors.black
+                                                        .withOpacity(0.5),
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        CupertinoActionSheet(
+                                                          actions: [
+                                                            CupertinoActionSheetAction(
+                                                              onPressed:
+                                                                  () async {
+                                                                setState(() {
+                                                                  fences.removeWhere((element) =>
                                                                       element
                                                                           .sId ==
                                                                       fences[index]
                                                                           .sId);
-                                                            });
-                                                            Navigator.pop(
-                                                                context);
-                                                            // if (await _onDelete(
-                                                            //     employees[index]
-                                                            //         .sId
-                                                            //         .toString())) {
-
-                                                            // }
-                                                          },
-                                                          child: Text(
-                                                            "Delete",
-                                                            style: FontStyle(
-                                                                18,
-                                                                Colors.red,
-                                                                FontWeight
-                                                                    .w400),
+                                                                });
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child: Text(
+                                                                "Delete",
+                                                                style: FontStyle(
+                                                                    18,
+                                                                    Colors.red,
+                                                                    FontWeight
+                                                                        .w400),
+                                                              ),
+                                                            ),
+                                                            CupertinoActionSheetAction(
+                                                              onPressed: () {},
+                                                              child: Text(
+                                                                "Edit",
+                                                                style: FontStyle(
+                                                                    18,
+                                                                    Colors
+                                                                        .black,
+                                                                    FontWeight
+                                                                        .w400),
+                                                              ),
+                                                            ),
+                                                            CupertinoActionSheetAction(
+                                                              onPressed: () {},
+                                                              child: Text(
+                                                                "Assign Fence",
+                                                                style: FontStyle(
+                                                                    18,
+                                                                    Colors
+                                                                        .black,
+                                                                    FontWeight
+                                                                        .w400),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                          cancelButton:
+                                                              CupertinoActionSheetAction(
+                                                            onPressed: () {
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                            child: const Text(
+                                                                "Cancel"),
                                                           ),
-                                                        ),
-                                                        CupertinoActionSheetAction(
-                                                          onPressed: () {},
-                                                          child: Text(
-                                                            "Edit",
-                                                            style: FontStyle(
-                                                                18,
-                                                                Colors.black,
-                                                                FontWeight
-                                                                    .w400),
-                                                          ),
-                                                        ),
-                                                        CupertinoActionSheetAction(
-                                                          onPressed: () {},
-                                                          child: Text(
-                                                            "Assign Fence",
-                                                            style: FontStyle(
-                                                                18,
-                                                                Colors.black,
-                                                                FontWeight
-                                                                    .w400),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                      cancelButton:
-                                                          CupertinoActionSheetAction(
-                                                        onPressed: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: const Text(
-                                                            "Cancel"),
-                                                      ),
-                                                    ));
-                                          },
-                                          child: const Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            size: 24,
-                                            color: Colors.black87,
-                                          ),
-                                        )),
+                                                        ));
+                                              },
+                                              child: const Icon(
+                                                Icons
+                                                    .keyboard_arrow_down_rounded,
+                                                size: 24,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               },
@@ -341,120 +360,133 @@ class _OrganizationsListState extends State<FencesList> {
                             itemCount: searchResults.length,
                             itemBuilder: (context, index) {
                               return InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => FenceDetail(
+                                              fence: fences[index])));
+                                },
                                 child: Container(
                                   padding: const EdgeInsets.only(
-                                      left: 20, right: 10, top: 5, bottom: 5),
+                                      left: 20, right: 10, top: 15, bottom: 15),
                                   margin: const EdgeInsets.only(
-                                      top: 10, left: 30, right: 30),
+                                      top: 12, left: 30, right: 30),
                                   decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.black, blurRadius: 1.5)
+                                    ],
                                     color:
                                         const Color.fromRGBO(255, 255, 255, 1),
-                                    borderRadius: BorderRadius.circular(15),
+                                    borderRadius: BorderRadius.circular(10),
                                     gradient: LinearGradient(stops: const [
                                       0.015,
                                       0.01
                                     ], colors: [
                                       Constants.primaryColor,
-                                      const Color.fromRGBO(255, 255, 255, 0.7)
+                                      const Color.fromRGBO(255, 255, 255, 1)
                                     ]),
                                   ),
-                                  child: ListTile(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    FenceDetail(
-                                                        fence: fences[index])));
-                                      },
-                                      title: Text(
-                                          searchResults[index].name.toString(),
-                                          style: FontStyle(
-                                              20,
-                                              Constants.primaryColor,
-                                              FontWeight.w500)),
-                                      trailing: InkWell(
-                                        onTap: () async {
-                                          await showCupertinoModalPopup(
-                                              barrierColor:
-                                                  Colors.black.withOpacity(0.5),
-                                              context: context,
-                                              builder: (context) =>
-                                                  CupertinoActionSheet(
-                                                    actions: [
-                                                      CupertinoActionSheetAction(
-                                                        onPressed: () async {
-                                                          setState(() {
-                                                            searchResults.removeWhere(
-                                                                (element) =>
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                              child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                  fences[index].name.toString(),
+                                                  style: FontStyle(
+                                                      20,
+                                                      Constants.primaryColor,
+                                                      FontWeight.w500)),
+                                            ],
+                                          )),
+                                          InkWell(
+                                            onTap: () async {
+                                              await showCupertinoModalPopup(
+                                                  barrierColor: Colors.black
+                                                      .withOpacity(0.5),
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      CupertinoActionSheet(
+                                                        actions: [
+                                                          CupertinoActionSheetAction(
+                                                            onPressed:
+                                                                () async {
+                                                              setState(() {
+                                                                searchResults.removeWhere((element) =>
                                                                     element
                                                                         .sId ==
                                                                     searchResults[
                                                                             index]
                                                                         .sId);
-                                                            fences.removeWhere(
-                                                                (element) =>
-                                                                    element
-                                                                        .sId ==
-                                                                    fences[index]
-                                                                        .sId);
-                                                          });
-                                                          Navigator.pop(
-                                                              context);
-                                                          // if (await _onDelete(
-                                                          //     searchResults[
-                                                          //             index]
-                                                          //         .sId
-                                                          //         .toString())) {
-
-                                                          // }
-                                                        },
-                                                        child: Text(
-                                                          "Delete",
-                                                          style: FontStyle(
-                                                              18,
-                                                              Colors.red,
-                                                              FontWeight.w400),
+                                                                fences.removeWhere(
+                                                                    (element) =>
+                                                                        element
+                                                                            .sId ==
+                                                                        fences[index]
+                                                                            .sId);
+                                                              });
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                            child: Text(
+                                                              "Delete",
+                                                              style: FontStyle(
+                                                                  18,
+                                                                  Colors.red,
+                                                                  FontWeight
+                                                                      .w400),
+                                                            ),
+                                                          ),
+                                                          CupertinoActionSheetAction(
+                                                            onPressed: () {},
+                                                            child: Text(
+                                                              "Edit",
+                                                              style: FontStyle(
+                                                                  18,
+                                                                  Colors.black,
+                                                                  FontWeight
+                                                                      .w400),
+                                                            ),
+                                                          ),
+                                                          CupertinoActionSheetAction(
+                                                            onPressed: () {},
+                                                            child: Text(
+                                                              "Assign Fence",
+                                                              style: FontStyle(
+                                                                  18,
+                                                                  Colors.black,
+                                                                  FontWeight
+                                                                      .w400),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                        cancelButton:
+                                                            CupertinoActionSheetAction(
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child: const Text(
+                                                              "Cancel"),
                                                         ),
-                                                      ),
-                                                      CupertinoActionSheetAction(
-                                                        onPressed: () {},
-                                                        child: Text(
-                                                          "Edit",
-                                                          style: FontStyle(
-                                                              18,
-                                                              Colors.black,
-                                                              FontWeight.w400),
-                                                        ),
-                                                      ),
-                                                      CupertinoActionSheetAction(
-                                                        onPressed: () {},
-                                                        child: Text(
-                                                          "Assign Fence",
-                                                          style: FontStyle(
-                                                              18,
-                                                              Colors.black,
-                                                              FontWeight.w400),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                    cancelButton:
-                                                        CupertinoActionSheetAction(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child:
-                                                          const Text("Cancel"),
-                                                    ),
-                                                  ));
-                                        },
-                                        child: const Icon(
-                                          Icons.keyboard_arrow_down_rounded,
-                                          size: 24,
-                                          color: Colors.black87,
-                                        ),
-                                      )),
+                                                      ));
+                                            },
+                                            child: const Icon(
+                                              Icons.keyboard_arrow_down_rounded,
+                                              size: 24,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               );
                             },

@@ -47,12 +47,13 @@ class _FenceDetailState extends State<FenceDetail> {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        widget.fence.name.toString(),
-                        style: FontStyle(20, Colors.black, FontWeight.bold),
-                      ),
                       Expanded(
-                          child: Row(
+                        child: Text(
+                          widget.fence.name.toString(),
+                          style: FontStyle(20, Colors.black, FontWeight.bold),
+                        ),
+                      ),
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           ElevatedButton.icon(
@@ -77,7 +78,7 @@ class _FenceDetailState extends State<FenceDetail> {
                                     16, Colors.white, FontWeight.w500)),
                           ),
                         ],
-                      ))
+                      )
                     ],
                   ),
                   SizedBox(
@@ -101,15 +102,15 @@ class _FenceDetailState extends State<FenceDetail> {
                       mapController: mapController,
                       options: MapOptions(
                         center: latlnglist.first,
-                        zoom: 12,
+                        zoom: 13.5,
                         onTap: (position, latlng) {
                           print("${latlng.latitude},${latlng.longitude}");
                           setState(() {
-                            marker.add(Marker(
-                                point: latlng,
-                                builder: (context) {
-                                  return const Icon(Icons.location_on);
-                                }));
+                            // marker.add(Marker(
+                            //     point: latlng,
+                            //     builder: (context) {
+                            //       return const Icon(Icons.location_on);
+                            //     }));
                           });
                         },
                       ),
@@ -121,7 +122,7 @@ class _FenceDetailState extends State<FenceDetail> {
                               strokeWidth: 5,
                               points: latlnglist)
                         ]),
-                        MarkerLayerOptions(markers: marker)
+                        MarkerLayerOptions(markers: marker),
                       ],
                     ),
                   ),

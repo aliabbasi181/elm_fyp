@@ -1,8 +1,13 @@
+import 'package:elm_fyp/SharedPreferences/local_storage.dart';
+import 'package:elm_fyp/Views/admin/admin_nav.dart';
 import 'package:elm_fyp/Views/constants.dart';
 import 'package:elm_fyp/Views/login_register/login.dart';
 import 'package:elm_fyp/Views/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import '../BLoc/application_bloc.dart';
 
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
@@ -32,10 +37,24 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
     await Future.delayed(const Duration(seconds: 2), () {
       _animationController!.forward();
     });
-    await Future.delayed(const Duration(milliseconds: 800), () {
-      Navigator.pushAndRemoveUntil(context,
-          MaterialPageRoute(builder: (context) => Login()), (route) => false);
-    });
+    List<String?> credentials = await LocalStorage.getUser();
+    if (credentials[0] == "null") {
+      await Future.delayed(const Duration(milliseconds: 800), () {
+        Navigator.pushAndRemoveUntil(context,
+            MaterialPageRoute(builder: (context) => Login()), (route) => false);
+      });
+    } else {
+      final applicationBloc =
+          Provider.of<ApplicationBloc>(context, listen: false);
+      if (credentials[1]! == "admin" && credentials[2]! == "admin") {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => AdminNav()),
+            (route) => false);
+      } else {
+        applicationBloc.login(context, credentials[1]!, credentials[2]!);
+      }
+    }
   }
 
   @override

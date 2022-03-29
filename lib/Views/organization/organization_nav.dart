@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:elm_fyp/Views/constants.dart';
 import 'package:elm_fyp/Views/organization/employee_list.dart';
 import 'package:elm_fyp/Views/organization/organization_notification.dart';
@@ -26,6 +28,7 @@ class OrganizationNav extends StatefulWidget {
 
 class _OrganizationNavState extends State<OrganizationNav> {
   late PageController _pageController;
+  Timer? timer;
   @override
   initState() {
     super.initState();
@@ -35,6 +38,15 @@ class _OrganizationNavState extends State<OrganizationNav> {
     } else {
       _pageController = PageController(initialPage: 1);
     }
+    // timer = Timer.periodic(Duration(seconds: 2), (Timer t) {
+    //   print(DateTime.now());
+    // });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   Widget build(BuildContext context) {

@@ -1,5 +1,6 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:elm_fyp/BLoc/application_bloc.dart';
+import 'package:elm_fyp/SharedPreferences/local_storage.dart';
 import 'package:elm_fyp/Views/admin/admin_nav.dart';
 import 'package:elm_fyp/Views/login_register/login.dart';
 import 'package:elm_fyp/Views/organization/organization_nav.dart';
@@ -8,7 +9,7 @@ import 'package:elm_fyp/local_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     AwesomeNotifications().initialize(null, [
@@ -29,6 +30,8 @@ void main() {
   } catch (ex) {
     print(ex);
   }
+  // shared preferences
+  await LocalStorage.init();
   runApp(
     ChangeNotifierProvider(
       create: ((context) => ApplicationBloc()),

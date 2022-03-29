@@ -11,7 +11,7 @@ class Constants {
   }
 
   static Color primaryColor = const Color(0XFF0583d3);
-  static String baseURL = "http://192.168.100.73:3000/api";
+  static String baseURL = "http://localhost:3000/api";
   static String mapURL = "http://a.tile.openstreetmap.org/{z}/{x}/{y}.png";
   static String USER_TOKEN = "";
 

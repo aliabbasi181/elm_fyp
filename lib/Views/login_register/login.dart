@@ -1,4 +1,5 @@
 import 'package:elm_fyp/BLoc/application_bloc.dart';
+import 'package:elm_fyp/SharedPreferences/local_storage.dart';
 import 'package:elm_fyp/Views/admin/admin_nav.dart';
 import 'package:elm_fyp/local_notification.dart';
 import 'package:flutter/cupertino.dart';
@@ -85,6 +86,8 @@ class _LoginState extends State<Login> {
                               onTap: () async {
                                 if (email.text == "admin" &&
                                     password.text == "admin") {
+                                  LocalStorage.setCredentials(
+                                      "admin", "admin", "0");
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(

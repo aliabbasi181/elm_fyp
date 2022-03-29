@@ -1,3 +1,4 @@
+import 'package:elm_fyp/SharedPreferences/local_storage.dart';
 import 'package:flutter/material.dart';
 
 class AdminProfile extends StatefulWidget {
@@ -10,6 +11,24 @@ class AdminProfile extends StatefulWidget {
 class _AdminProfileState extends State<AdminProfile> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+                onPressed: () async {
+                  await LocalStorage.removeUser();
+                },
+                child: Text("remove user")),
+            ElevatedButton(
+                onPressed: () async {
+                  print(await LocalStorage.getUser());
+                },
+                child: Text("get user")),
+          ],
+        ),
+      ),
+    );
   }
 }
