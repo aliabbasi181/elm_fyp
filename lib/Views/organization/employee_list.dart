@@ -2,6 +2,7 @@ import 'package:elm_fyp/BLoc/application_bloc.dart';
 import 'package:elm_fyp/Models/EmployeeModel.dart';
 import 'package:elm_fyp/Views/constants.dart';
 import 'package:elm_fyp/Views/organization/add_employee.dart';
+import 'package:elm_fyp/Views/organization/assign_fence_one_employee.dart';
 import 'package:elm_fyp/Views/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -310,7 +311,15 @@ class _OrganizationsListState extends State<EmployeeList> {
                                                           ),
                                                         ),
                                                         CupertinoActionSheetAction(
-                                                          onPressed: () {},
+                                                          onPressed: () {
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder: (context) =>
+                                                                        AssignFenceOneEmployee(
+                                                                            employee:
+                                                                                employees[index])));
+                                                          },
                                                           child: Text(
                                                             "Assign Fence",
                                                             style: FontStyle(

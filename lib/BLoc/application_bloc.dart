@@ -99,4 +99,14 @@ class ApplicationBloc with ChangeNotifier {
     notifyListeners();
     return false;
   }
+
+  assignFenceToOneEmployee(BuildContext context, String empId, String regId,
+      String dateFrom, String dateTo, String timeFrom, String timeTo) async {
+    loading = true;
+    notifyListeners();
+    await fenceController.assignFenceToOneEmployee(
+        context, empId, regId, dateFrom, dateTo, timeFrom, timeTo);
+    loading = false;
+    notifyListeners();
+  }
 }

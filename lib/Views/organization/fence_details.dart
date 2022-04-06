@@ -18,13 +18,20 @@ class _FenceDetailState extends State<FenceDetail> {
   List<LatLng> userPoints = <LatLng>[];
   MapController mapController = MapController();
   List<Marker> marker = [];
+  LatLng? center;
   @override
   initState() {
     super.initState();
+    double lat = 0, lng = 0;
     for (var item in widget.fence.points!) {
+      lat += double.parse(item.lat.toString());
+      lng += double.parse(item.lng.toString());
       latlnglist.add(LatLng(double.parse(item.lat.toString()),
           double.parse(item.lng.toString())));
     }
+    lat = lat / widget.fence.points!.length;
+    lng = lng / widget.fence.points!.length;
+    center = LatLng(lat, lng);
   }
 
   Widget build(BuildContext context) {
@@ -101,7 +108,7 @@ class _FenceDetailState extends State<FenceDetail> {
                     child: FlutterMap(
                       mapController: mapController,
                       options: MapOptions(
-                        center: latlnglist.first,
+                        center: center,
                         zoom: 13.5,
                         onTap: (position, latlng) {
                           print("${latlng.latitude},${latlng.longitude}");

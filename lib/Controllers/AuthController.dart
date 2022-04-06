@@ -17,6 +17,7 @@ class AuthController {
           Constants.USER_TOKEN = json['token'];
           Constants.setAuthentication();
           LocalStorage.setCredentials(email, password, json['_id']);
+          print(json);
           if (json['role'] == "organization") {
             Navigator.pushAndRemoveUntil(
                 context,

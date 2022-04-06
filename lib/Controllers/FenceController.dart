@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:elm_fyp/Models/FenceModel.dart';
 import 'package:elm_fyp/Views/constants.dart';
+import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:http/http.dart' as http;
 
 class FenceController {
   getFences() async {
@@ -43,5 +47,31 @@ class FenceController {
       return false;
     }
     return false;
+  }
+
+  assignFenceToOneEmployee(BuildContext context, String empId, String regId,
+      String dateFrom, String dateTo, String timeFrom, String timeTo) async {
+    String url = Constants.baseURL + "/geo/polygon/assign-fence";
+    try {
+      Map<String, dynamic> payload = {
+        "employee_id": empId,
+        "region_id": regId,
+        "date_from": dateFrom,
+        "date_to": dateTo,
+        "start_time": timeFrom,
+        "end_time": timeTo
+      };
+      var response = await http.post(Uri.parse(url),
+          body: payload, headers: Constants.requestHeaders);
+      if (response.statusCode == 200) {
+        Constants.showSnackBar(
+            context, "Fence successfully assigned to employee", true);
+      } else {
+        var json = jsonDecode(response.body);
+        Constants.showSnackBar(context, json['message'].toString(), true);
+      }
+    } catch (ex) {
+      print(ex);
+    }
   }
 }

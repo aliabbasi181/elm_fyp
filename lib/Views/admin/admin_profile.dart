@@ -1,4 +1,5 @@
 import 'package:elm_fyp/SharedPreferences/local_storage.dart';
+import 'package:elm_fyp/Views/login_register/login.dart';
 import 'package:flutter/material.dart';
 
 class AdminProfile extends StatefulWidget {
@@ -19,13 +20,12 @@ class _AdminProfileState extends State<AdminProfile> {
             ElevatedButton(
                 onPressed: () async {
                   await LocalStorage.removeUser();
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Login()),
+                      (route) => false);
                 },
-                child: Text("remove user")),
-            ElevatedButton(
-                onPressed: () async {
-                  print(await LocalStorage.getUser());
-                },
-                child: Text("get user")),
+                child: Text("logout")),
           ],
         ),
       ),

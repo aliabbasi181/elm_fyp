@@ -1,6 +1,7 @@
 import 'package:elm_fyp/BLoc/application_bloc.dart';
 import 'package:elm_fyp/Models/FenceModel.dart';
 import 'package:elm_fyp/Views/constants.dart';
+import 'package:elm_fyp/Views/organization/assign_fence_multiple_employees.dart';
 import 'package:elm_fyp/Views/organization/create_fence.dart';
 import 'package:elm_fyp/Views/organization/fence_details.dart';
 import 'package:elm_fyp/Views/widgets.dart';
@@ -312,7 +313,14 @@ class _OrganizationsListState extends State<FencesList> {
                                                               ),
                                                             ),
                                                             CupertinoActionSheetAction(
-                                                              onPressed: () {},
+                                                              onPressed: () {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder:
+                                                                            (context) =>
+                                                                                AssignFenceMultipleEmployees(fence: fences[index])));
+                                                              },
                                                               child: Text(
                                                                 "Assign Fence",
                                                                 style: FontStyle(
