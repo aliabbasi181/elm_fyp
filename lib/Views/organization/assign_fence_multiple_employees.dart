@@ -40,6 +40,7 @@ class _AssignFenceMultipleEmployeesState
   String selectEmployeesList = "Select Employees";
   List<EmployeeModel> selectedEmployees = [];
   LatLng? center;
+  double _zoomValue = 14;
   @override
   initState() {
     super.initState();
@@ -137,11 +138,77 @@ class _AssignFenceMultipleEmployeesState
                           Polygon(
                               points: latlnglist,
                               color: Colors.transparent,
-                              borderColor: Colors.red,
+                              borderColor: Colors.black,
                               borderStrokeWidth: 5)
                         ]),
                       ],
                     ),
+                  ),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          var temp = _zoomValue;
+                          if (temp-- > 5 || temp-- == 5) {
+                            setState(() {
+                              _zoomValue--;
+                              mapController.move(center!, _zoomValue);
+                            });
+                          }
+                        },
+                        child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black54, blurRadius: 5)
+                                ],
+                                borderRadius: BorderRadius.circular(100)),
+                            child: Icon(
+                              CupertinoIcons.minus,
+                              size: 16,
+                            )),
+                      ),
+                      Expanded(
+                        child: Slider(
+                            activeColor: Constants.primaryColor,
+                            min: 5,
+                            max: 16,
+                            label: "Zoom Level",
+                            value: _zoomValue,
+                            onChanged: (value) {
+                              setState(() {
+                                _zoomValue = value;
+                                mapController.move(center!, value);
+                              });
+                            }),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          var temp = _zoomValue;
+                          if (temp++ < 16 || temp++ == 16) {
+                            setState(() {
+                              _zoomValue++;
+                              mapController.move(center!, _zoomValue);
+                            });
+                          }
+                        },
+                        child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black54, blurRadius: 5)
+                                ],
+                                borderRadius: BorderRadius.circular(100)),
+                            child: Icon(
+                              CupertinoIcons.plus,
+                              size: 16,
+                            )),
+                      ),
+                    ],
                   ),
                   InkWell(
                     onTap: () async {
@@ -373,8 +440,6 @@ class _AssignFenceMultipleEmployeesState
                                       SizedBox(
                                         height: 180,
                                         child: CupertinoDatePicker(
-                                          minimumDate: DateTime.now(),
-                                          maximumDate: DateTime(2030),
                                           onDateTimeChanged: (time) {
                                             setState(() {
                                               fromTime =
@@ -434,8 +499,6 @@ class _AssignFenceMultipleEmployeesState
                                       SizedBox(
                                         height: 180,
                                         child: CupertinoDatePicker(
-                                          minimumDate: DateTime.now(),
-                                          maximumDate: DateTime(2030),
                                           onDateTimeChanged: (time) {
                                             setState(() {
                                               toTime =
@@ -662,7 +725,7 @@ class _PickEmployeesState extends State<PickEmployees> {
               ],
             ),
             Container(
-              height: Constants.screenHeight(context) * 0.47,
+              height: Constants.screenHeight(context) * 0.45,
               child: ListView.builder(
                   itemCount: employees.length,
                   itemBuilder: (context, index) {

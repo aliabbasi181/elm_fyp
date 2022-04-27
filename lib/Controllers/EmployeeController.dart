@@ -54,4 +54,35 @@ class EmployeeController {
     }
     return false;
   }
+
+  employeeDetail() async {
+    String url = Constants.baseURL + "/employee/employeeDetail";
+    try {
+      var response = await Dio()
+          .get(url, options: Options(headers: Constants.requestHeaders));
+      if (response.statusCode == 200) {
+        Constants.employee = EmployeeModel.fromJson(response.data['data']);
+      }
+    } catch (ex) {
+      print(ex.toString());
+    }
+  }
+
+  Future<EmployeeModel> employeeUpdateStatus(String id, bool status) async {
+    String url = Constants.baseURL + "/employee/change-active-status";
+    EmployeeModel organization = EmployeeModel();
+    Map<String, dynamic> payload = {
+      "id": id,
+      "active": status,
+      "msg": "Some message"
+    };
+    try {
+      var response = await Dio().post(url, data: payload);
+      if (response.statusCode == 200) {
+        var json = response.data['data'];
+        organization = EmployeeModel.fromJson(json);
+      }
+    } catch (ex) {}
+    return organization;
+  }
 }

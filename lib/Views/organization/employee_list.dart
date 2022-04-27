@@ -3,9 +3,11 @@ import 'package:elm_fyp/Models/EmployeeModel.dart';
 import 'package:elm_fyp/Views/constants.dart';
 import 'package:elm_fyp/Views/organization/add_employee.dart';
 import 'package:elm_fyp/Views/organization/assign_fence_one_employee.dart';
+import 'package:elm_fyp/Views/organization/employee_details/employee_details.dart';
 import 'package:elm_fyp/Views/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -42,6 +44,8 @@ class _OrganizationsListState extends State<EmployeeList> {
           email: item['email'],
           cnic: item['cnic'],
           role: item['role'],
+          status: item['status'],
+          designation: item['designation'],
           phone: item['phone']));
     }
     employees = List.from(employees.reversed);
@@ -213,10 +217,19 @@ class _OrganizationsListState extends State<EmployeeList> {
                             onRefresh: () => _onRefresh(),
                             controller: _refreshController,
                             child: ListView.builder(
+                              padding: const EdgeInsets.only(bottom: 30),
                               itemCount: employees.length,
                               itemBuilder: (context, index) {
                                 return InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EmployeeDetails(
+                                                    employee:
+                                                        employees[index])));
+                                  },
                                   child: Container(
                                     padding: const EdgeInsets.only(
                                         left: 20,
@@ -257,14 +270,39 @@ class _OrganizationsListState extends State<EmployeeList> {
                                                     20,
                                                     Constants.primaryColor,
                                                     FontWeight.w500)),
-                                            Text(
-                                                employees[index]
-                                                    .email
-                                                    .toString(),
-                                                style: FontStyle(
-                                                    12,
-                                                    Colors.black38,
-                                                    FontWeight.w400)),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                    employees[index]
+                                                        .email
+                                                        .toString(),
+                                                    style: FontStyle(
+                                                        12,
+                                                        Colors.black38,
+                                                        FontWeight.w400)),
+                                                Container(
+                                                  child: Text(
+                                                      employees[index]
+                                                                  .status
+                                                                  .toString() ==
+                                                              "true"
+                                                          ? "Active"
+                                                          : "Unactive",
+                                                      style: FontStyle(
+                                                          12,
+                                                          employees[index]
+                                                                      .status
+                                                                      .toString() ==
+                                                                  "true"
+                                                              ? Colors.green
+                                                              : Colors.red,
+                                                          FontWeight.w400)),
+                                                ),
+                                              ],
+                                            ),
                                           ],
                                         )),
                                         InkWell(
@@ -278,26 +316,49 @@ class _OrganizationsListState extends State<EmployeeList> {
                                                       actions: [
                                                         CupertinoActionSheetAction(
                                                           onPressed: () async {
-                                                            setState(() {
-                                                              employees.removeWhere(
-                                                                  (element) =>
-                                                                      element
-                                                                          .sId ==
-                                                                      employees[
-                                                                              index]
-                                                                          .sId);
-                                                            });
+                                                            var data =
+                                                                await applicationBloc
+                                                                    .employeeUpdateStatus(
+                                                              employees[index]
+                                                                  .sId
+                                                                  .toString(),
+                                                              employees[index]
+                                                                          .status
+                                                                          .toString() ==
+                                                                      "true"
+                                                                  ? false
+                                                                  : true,
+                                                            );
+                                                            if (data.name !=
+                                                                null) {
+                                                              setState(() {
+                                                                employees[
+                                                                        index] =
+                                                                    data;
+                                                              });
+                                                            }
                                                             Navigator.pop(
                                                                 context);
                                                           },
                                                           child: Text(
-                                                            "Delete",
-                                                            style: FontStyle(
-                                                                18,
-                                                                Colors.red,
-                                                                FontWeight
-                                                                    .w400),
-                                                          ),
+                                                              employees[index]
+                                                                          .status
+                                                                          .toString() ==
+                                                                      "true"
+                                                                  ? "Unactive"
+                                                                  : "Active",
+                                                              style: FontStyle(
+                                                                  20,
+                                                                  employees[index]
+                                                                              .status
+                                                                              .toString() ==
+                                                                          "true"
+                                                                      ? Colors
+                                                                          .red
+                                                                      : Constants
+                                                                          .primaryColor,
+                                                                  FontWeight
+                                                                      .w400)),
                                                         ),
                                                         CupertinoActionSheetAction(
                                                           onPressed: () {},
@@ -361,6 +422,7 @@ class _OrganizationsListState extends State<EmployeeList> {
                         child: Container(
                           height: Constants.screenHeight(context) * 0.59,
                           child: ListView.builder(
+                            padding: const EdgeInsets.only(bottom: 30),
                             itemCount: searchResults.length,
                             itemBuilder: (context, index) {
                               return InkWell(
@@ -393,17 +455,46 @@ class _OrganizationsListState extends State<EmployeeList> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(employees[index].name.toString(),
+                                          Text(
+                                              searchResults[index]
+                                                  .name
+                                                  .toString(),
                                               style: FontStyle(
                                                   20,
                                                   Constants.primaryColor,
                                                   FontWeight.w500)),
-                                          Text(
-                                              employees[index].email.toString(),
-                                              style: FontStyle(
-                                                  12,
-                                                  Colors.black38,
-                                                  FontWeight.w400)),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                  searchResults[index]
+                                                      .email
+                                                      .toString(),
+                                                  style: FontStyle(
+                                                      12,
+                                                      Colors.black38,
+                                                      FontWeight.w400)),
+                                              Container(
+                                                child: Text(
+                                                    searchResults[index]
+                                                                .status
+                                                                .toString() ==
+                                                            "true"
+                                                        ? "Active"
+                                                        : "Unactive",
+                                                    style: FontStyle(
+                                                        12,
+                                                        searchResults[index]
+                                                                    .status
+                                                                    .toString() ==
+                                                                "true"
+                                                            ? Colors.green
+                                                            : Colors.red,
+                                                        FontWeight.w400)),
+                                              ),
+                                            ],
+                                          ),
                                         ],
                                       )),
                                       InkWell(
@@ -417,32 +508,52 @@ class _OrganizationsListState extends State<EmployeeList> {
                                                     actions: [
                                                       CupertinoActionSheetAction(
                                                         onPressed: () async {
-                                                          setState(() {
-                                                            searchResults.removeWhere(
-                                                                (element) =>
-                                                                    element
-                                                                        .sId ==
-                                                                    searchResults[
-                                                                            index]
-                                                                        .sId);
-                                                            employees.removeWhere(
-                                                                (element) =>
-                                                                    element
-                                                                        .sId ==
-                                                                    employees[
-                                                                            index]
-                                                                        .sId);
-                                                          });
+                                                          var data =
+                                                              await applicationBloc
+                                                                  .employeeUpdateStatus(
+                                                            searchResults[index]
+                                                                .sId
+                                                                .toString(),
+                                                            searchResults[index]
+                                                                        .status
+                                                                        .toString() ==
+                                                                    "true"
+                                                                ? false
+                                                                : true,
+                                                          );
+                                                          if (data.name !=
+                                                              null) {
+                                                            setState(() {
+                                                              searchResults[
+                                                                  index] = data;
+                                                              employees[employees
+                                                                  .indexWhere((element) =>
+                                                                      element
+                                                                          .sId ==
+                                                                      data.sId)] = data;
+                                                            });
+                                                          }
                                                           Navigator.pop(
                                                               context);
                                                         },
                                                         child: Text(
-                                                          "Delete",
-                                                          style: FontStyle(
-                                                              18,
-                                                              Colors.red,
-                                                              FontWeight.w400),
-                                                        ),
+                                                            searchResults[index]
+                                                                        .status
+                                                                        .toString() ==
+                                                                    "true"
+                                                                ? "Unactive"
+                                                                : "Active",
+                                                            style: FontStyle(
+                                                                20,
+                                                                searchResults[index]
+                                                                            .status
+                                                                            .toString() ==
+                                                                        "true"
+                                                                    ? Colors.red
+                                                                    : Constants
+                                                                        .primaryColor,
+                                                                FontWeight
+                                                                    .w400)),
                                                       ),
                                                       CupertinoActionSheetAction(
                                                         onPressed: () {},

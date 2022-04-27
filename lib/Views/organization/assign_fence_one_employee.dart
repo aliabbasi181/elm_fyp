@@ -36,16 +36,12 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
   String fromTime = "From -:-";
   String toTime = "To -:-";
   FenceModel fence = FenceModel(name: "Select Fence");
+  double _zoomValue = 14;
+  LatLng center = LatLng(33.658664032, 73.085499658);
   @override
   initState() {
     super.initState();
     setState(() {});
-    fences.add(Fence("Shamsabad"));
-    fences.add(Fence("Rajabazar"));
-    fences.add(Fence("Rawat"));
-    fences.add(Fence("Sadar"));
-    fences.add(Fence("Lignum Tower"));
-    fences.add(Fence("Attok Fort"));
   }
 
   Widget build(BuildContext context) {
@@ -115,7 +111,7 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                       mapController: mapController,
                       options: MapOptions(
                         center: fenceList.first,
-                        zoom: 12,
+                        zoom: _zoomValue,
                         onTap: (position, latlng) {
                           print("${latlng.latitude},${latlng.longitude}");
                           setState(() {
@@ -129,11 +125,77 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                           Polygon(
                               points: fenceList,
                               color: Colors.transparent,
-                              borderColor: Colors.red,
+                              borderColor: Colors.black,
                               borderStrokeWidth: 5)
                         ]),
                       ],
                     ),
+                  ),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          var temp = _zoomValue;
+                          if (temp-- > 5 || temp-- == 5) {
+                            setState(() {
+                              _zoomValue--;
+                              mapController.move(center, _zoomValue);
+                            });
+                          }
+                        },
+                        child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black54, blurRadius: 5)
+                                ],
+                                borderRadius: BorderRadius.circular(100)),
+                            child: Icon(
+                              CupertinoIcons.minus,
+                              size: 16,
+                            )),
+                      ),
+                      Expanded(
+                        child: Slider(
+                            activeColor: Constants.primaryColor,
+                            min: 5,
+                            max: 16,
+                            label: "Zoom Level",
+                            value: _zoomValue,
+                            onChanged: (value) {
+                              setState(() {
+                                _zoomValue = value;
+                                mapController.move(center, value);
+                              });
+                            }),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          var temp = _zoomValue;
+                          if (temp++ < 16 || temp++ == 16) {
+                            setState(() {
+                              _zoomValue++;
+                              mapController.move(center, _zoomValue);
+                            });
+                          }
+                        },
+                        child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black54, blurRadius: 5)
+                                ],
+                                borderRadius: BorderRadius.circular(100)),
+                            child: Icon(
+                              CupertinoIcons.plus,
+                              size: 16,
+                            )),
+                      ),
+                    ],
                   ),
                   InkWell(
                     onTap: () async {
@@ -156,7 +218,6 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                                 ),
                               );
                             });
-                        LatLng center;
                         double lat = 0, lng = 0;
                         if (fence.points != null) {
                           fenceList = [];
@@ -169,6 +230,7 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                           }
                           lat = lat / fence.points!.length;
                           lng = lng / fence.points!.length;
+                          center = LatLng(lat, lng);
                         }
                         mapController.move(LatLng(lat, lng), 13.5);
                       } catch (ex) {}

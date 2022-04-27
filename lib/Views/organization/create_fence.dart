@@ -1,5 +1,6 @@
 import 'package:elm_fyp/Views/constants.dart';
 import 'package:elm_fyp/Views/widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -18,6 +19,8 @@ class _CreateFenceState extends State<CreateFence> {
   List<LatLng> latlnglist = <LatLng>[];
   List<LatLng> redolist = <LatLng>[];
   MapController mapController = MapController();
+  double _zoomValue = 14;
+  LatLng center = LatLng(33.5651, 73.0169);
   @override
   initState() {
     super.initState();
@@ -72,8 +75,8 @@ class _CreateFenceState extends State<CreateFence> {
                     child: FlutterMap(
                       mapController: mapController,
                       options: MapOptions(
-                        center: LatLng(33.5651, 73.0169),
-                        zoom: 13,
+                        center: center,
+                        zoom: _zoomValue,
                         onTap: (position, latlng) {
                           print("${latlng.latitude},${latlng.longitude}");
                           setState(() {
@@ -148,7 +151,73 @@ class _CreateFenceState extends State<CreateFence> {
                         ),
                       ),
                     ],
-                  )
+                  ),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          var temp = _zoomValue;
+                          if (temp-- > 5 || temp-- == 5) {
+                            setState(() {
+                              _zoomValue--;
+                              mapController.move(center, _zoomValue);
+                            });
+                          }
+                        },
+                        child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black54, blurRadius: 5)
+                                ],
+                                borderRadius: BorderRadius.circular(100)),
+                            child: Icon(
+                              CupertinoIcons.minus,
+                              size: 16,
+                            )),
+                      ),
+                      Expanded(
+                        child: Slider(
+                            activeColor: Constants.primaryColor,
+                            min: 5,
+                            max: 15.4,
+                            label: "Zoom Level",
+                            value: _zoomValue,
+                            onChanged: (value) {
+                              setState(() {
+                                _zoomValue = value;
+                                mapController.move(center, value);
+                              });
+                            }),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          var temp = _zoomValue;
+                          if (temp++ < 15.4 || temp++ == 15.4) {
+                            setState(() {
+                              _zoomValue++;
+                              mapController.move(center, _zoomValue);
+                            });
+                          }
+                        },
+                        child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black54, blurRadius: 5)
+                                ],
+                                borderRadius: BorderRadius.circular(100)),
+                            child: Icon(
+                              CupertinoIcons.plus,
+                              size: 16,
+                            )),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

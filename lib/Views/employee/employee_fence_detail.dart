@@ -1,27 +1,30 @@
+import 'package:elm_fyp/Models/AssignedFenceModel.dart';
 import 'package:elm_fyp/Models/FenceModel.dart';
 import 'package:elm_fyp/Views/constants.dart';
-import 'package:elm_fyp/Views/organization/update_fence.dart';
 import 'package:elm_fyp/Views/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-class FenceDetail extends StatefulWidget {
+class EmployeeFenceDetail extends StatefulWidget {
   FenceModel fence;
-  FenceDetail({Key? key, required this.fence}) : super(key: key);
+  AssignedFenceModel assignedFenc;
+  EmployeeFenceDetail(
+      {Key? key, required this.fence, required this.assignedFenc})
+      : super(key: key);
 
   @override
-  _FenceDetailState createState() => _FenceDetailState();
+  _EmployeeFenceDetailState createState() => _EmployeeFenceDetailState();
 }
 
-class _FenceDetailState extends State<FenceDetail> {
+class _EmployeeFenceDetailState extends State<EmployeeFenceDetail> {
   List<LatLng> latlnglist = <LatLng>[];
   List<LatLng> userPoints = <LatLng>[];
   MapController mapController = MapController();
   List<Marker> marker = [];
-  LatLng? center;
   double _zoomValue = 14;
+  LatLng? center;
   @override
   initState() {
     super.initState();
@@ -63,43 +66,46 @@ class _FenceDetailState extends State<FenceDetail> {
                           style: FontStyle(20, Colors.black, FontWeight.bold),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          UpdateFence(fence: widget.fence)));
-                            },
-                            icon: const Icon(Icons.edit_location_alt_rounded),
-                            label: Text("Edit",
-                                style: FontStyle(
-                                    16, Colors.white, FontWeight.w500)),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: () async {},
-                            style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.resolveWith(
-                                        (states) => Constants.primaryColor)),
-                            icon: const Icon(Icons.delete_outline_rounded),
-                            label: Text("Delete",
-                                style: FontStyle(
-                                    16, Colors.white, FontWeight.w500)),
-                          ),
-                        ],
-                      )
                     ],
                   ),
-                  SizedBox(
-                    height: Constants.screenWidth(context) * 0.030,
-                  ),
+                  SizedBox(height: 10),
+                  RichText(
+                      text: TextSpan(
+                          text: "Date: ",
+                          style: FontStyle(15, Colors.black87, FontWeight.w400),
+                          children: [
+                        TextSpan(
+                          text: widget.assignedFenc.dateFrom,
+                          style: FontStyle(14, Colors.black87, FontWeight.w700),
+                        ),
+                        TextSpan(
+                          text: "  - To -  ",
+                          style: FontStyle(14, Colors.black87, FontWeight.w400),
+                        ),
+                        TextSpan(
+                          text: widget.assignedFenc.dateTo,
+                          style: FontStyle(14, Colors.black87, FontWeight.w700),
+                        )
+                      ])),
+                  RichText(
+                      text: TextSpan(
+                          text: "Time: ",
+                          style: FontStyle(15, Colors.black87, FontWeight.w400),
+                          children: [
+                        TextSpan(
+                          text: widget.assignedFenc.startTime,
+                          style: FontStyle(14, Colors.black87, FontWeight.w700),
+                        ),
+                        TextSpan(
+                          text: "  - To -  ",
+                          style: FontStyle(14, Colors.black87, FontWeight.w400),
+                        ),
+                        TextSpan(
+                          text: widget.assignedFenc.endTime,
+                          style: FontStyle(14, Colors.black87, FontWeight.w700),
+                        )
+                      ])),
+                  SizedBox(height: 10),
                   Container(
                     height: Constants.screenHeight(context) * 0.70,
                     width: Constants.screenWidth(context),
@@ -134,7 +140,7 @@ class _FenceDetailState extends State<FenceDetail> {
                         TileLayerOptions(urlTemplate: Constants.mapURL),
                         PolylineLayerOptions(polylines: [
                           Polyline(
-                              color: Colors.black,
+                              color: Colors.red,
                               strokeWidth: 5,
                               points: latlnglist)
                         ]),
@@ -172,11 +178,10 @@ class _FenceDetailState extends State<FenceDetail> {
                         child: Slider(
                             activeColor: Constants.primaryColor,
                             min: 5,
-                            max: 15.4,
+                            max: 16,
                             label: "Zoom Level",
                             value: _zoomValue,
                             onChanged: (value) {
-                              print(value);
                               setState(() {
                                 _zoomValue = value;
                                 mapController.move(center!, value);
@@ -186,7 +191,7 @@ class _FenceDetailState extends State<FenceDetail> {
                       InkWell(
                         onTap: () {
                           var temp = _zoomValue;
-                          if (temp++ < 15.4 || temp++ == 15.4) {
+                          if (temp++ < 16 || temp++ == 16) {
                             setState(() {
                               _zoomValue++;
                               mapController.move(center!, _zoomValue);

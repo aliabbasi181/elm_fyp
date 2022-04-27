@@ -1,4 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
+import 'package:elm_fyp/Models/EmployeeModel.dart';
+import 'package:elm_fyp/Models/OrganizationModel.dart';
 import 'package:flutter/material.dart';
 
 class Constants {
@@ -14,6 +16,8 @@ class Constants {
   static String baseURL = "http://localhost:3000/api";
   static String mapURL = "http://a.tile.openstreetmap.org/{z}/{x}/{y}.png";
   static String USER_TOKEN = "";
+  static EmployeeModel employee = EmployeeModel();
+  static OrganizationModel organization = OrganizationModel();
 
   static setMapIP(String ip) {
     if (ip.contains(RegExp('[a-zA-Z]'))) {

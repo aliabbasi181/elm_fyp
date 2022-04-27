@@ -9,7 +9,8 @@ import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 
 class AddOrganization extends StatefulWidget {
-  const AddOrganization({Key? key}) : super(key: key);
+  String? user = "admin";
+  AddOrganization({Key? key, this.user}) : super(key: key);
 
   @override
   _AddOrganizationState createState() => _AddOrganizationState();
@@ -43,10 +44,15 @@ class _AddOrganizationState extends State<AddOrganization> {
                   height: Constants.screenHeight(context) * 0.04,
                 ),
                 Text(
-                  "Let's add organization.",
+                  widget.user == "admin"
+                      ? "Let's add organization."
+                      : "Let's signup.",
                   style: FontStyle(40, Colors.black, FontWeight.bold),
                 ),
-                Text("Admin: ELMS Secure Map",
+                Text(
+                    widget.user == "admin"
+                        ? "Admin: ELMS Secure Map"
+                        : "As organization",
                     style: FontStyle(25, Colors.black, FontWeight.w300)),
                 SizedBox(
                   height: Constants.screenWidth(context) * 0.08,
@@ -99,8 +105,8 @@ class _AddOrganizationState extends State<AddOrganization> {
                                     password: password.text,
                                     address: address.text,
                                     phone: phone.text);
-                            if (await applicationBloc
-                                .addOrganization(organizationModel)) {
+                            if (await applicationBloc.addOrganization(
+                                organizationModel, widget.user!)) {
                               Constants.showSnackBar(context,
                                   "Organization successfully created...", true);
                             } else {
@@ -126,7 +132,9 @@ class _AddOrganizationState extends State<AddOrganization> {
                               Text(
                                   applicationBloc.loading
                                       ? "Please wait..."
-                                      : "Add Organization",
+                                      : widget.user == "admin"
+                                          ? "Add Organization"
+                                          : "Signup",
                                   textAlign: TextAlign.center,
                                   style: FontStyle(
                                       24, Colors.black54, FontWeight.bold)),

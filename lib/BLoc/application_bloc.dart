@@ -1,5 +1,6 @@
 import 'package:elm_fyp/Controllers/AuthController.dart';
 import 'package:elm_fyp/Controllers/EmployeeController.dart';
+import 'package:elm_fyp/Controllers/EmployeeLocationController.dart';
 import 'package:elm_fyp/Controllers/FenceController.dart';
 import 'package:elm_fyp/Controllers/OrganizationController.dart';
 import 'package:elm_fyp/Models/EmployeeModel.dart';
@@ -13,6 +14,8 @@ class ApplicationBloc with ChangeNotifier {
   final AuthController authController = AuthController();
   final EmployeeController employeeController = EmployeeController();
   final FenceController fenceController = FenceController();
+  final EmployeeLocationController employeeLocationController =
+      EmployeeLocationController();
 
   ApplicationBloc() {
     print("Bloc Working");
@@ -20,10 +23,11 @@ class ApplicationBloc with ChangeNotifier {
 
   bool loading = false;
 
-  Future<bool> addOrganization(OrganizationModel organizationModel) async {
+  Future<bool> addOrganization(
+      OrganizationModel organizationModel, String user) async {
     loading = true;
     notifyListeners();
-    if (await organizationController.addOrganization(organizationModel)) {
+    if (await organizationController.addOrganization(organizationModel, user)) {
       loading = false;
       notifyListeners();
       return true;
@@ -108,5 +112,37 @@ class ApplicationBloc with ChangeNotifier {
         context, empId, regId, dateFrom, dateTo, timeFrom, timeTo);
     loading = false;
     notifyListeners();
+  }
+
+  Future<List<dynamic>> getAssignedFences() async {
+    return await fenceController.getAssignedFences();
+  }
+
+  Future<dynamic> getFenceById(String id) async {
+    return await fenceController.getFenceById(id);
+  }
+
+  saveUserLocation(
+      LatLng latLng, String date, String time, BuildContext context) async {
+    await employeeLocationController.saveUserLocation(
+        latLng, date, time, context);
+  }
+
+  Future<dynamic> getEmployeeLocationsOnDate(String date, String id) async {
+    return await employeeLocationController.getEmployeeLocationsOnDate(
+        date, id);
+  }
+
+  employeeDetail() async {
+    await employeeController.employeeDetail();
+  }
+
+  Future<OrganizationModel> organizationUpdateStatus(
+      String id, bool status) async {
+    return await organizationController.organizationUpdateStatus(id, status);
+  }
+
+  Future<EmployeeModel> employeeUpdateStatus(String id, bool status) async {
+    return await employeeController.employeeUpdateStatus(id, status);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:elm_fyp/BLoc/application_bloc.dart';
 import 'package:elm_fyp/SharedPreferences/local_storage.dart';
+import 'package:elm_fyp/Views/admin/add_organization.dart';
 import 'package:elm_fyp/Views/admin/admin_nav.dart';
 import 'package:elm_fyp/local_notification.dart';
 import 'package:flutter/cupertino.dart';
@@ -94,8 +95,10 @@ class _LoginState extends State<Login> {
                                           builder: (context) => AdminNav()),
                                       (route) => false);
                                 } else {
-                                  email.text = "mtbc@gmail.com";
+                                  email.text = "admin@mtbc.com";
                                   password.text = "admin1234";
+                                  // email.text = "abubakrbanti@gmail.com";
+                                  // password.text = "admin1234";
                                   applicationBloc.login(
                                       context, email.text, password.text);
                                 }
@@ -130,38 +133,44 @@ class _LoginState extends State<Login> {
                     ),
                     InkWell(
                       onTap: () {
-                        ip.text = "a.tile.openstreetmap.org";
-                        showModalBottomSheet<void>(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return Container(
-                              height: 300,
-                              color: Colors.white,
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    InputField(
-                                        hint: "IP of map",
-                                        icon: Icons.network_check_outlined,
-                                        controller: ip),
-                                    ElevatedButton(
-                                      child: const Text('Connect'),
-                                      onPressed: () {
-                                        if (ip.text.isNotEmpty) {
-                                          Constants.setMapIP(
-                                              ip.text.toString());
-                                          Navigator.pop(context);
-                                        }
-                                      },
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        );
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AddOrganization(
+                                      user: "organization",
+                                    )));
+                        // ip.text = "a.tile.openstreetmap.org";
+                        // showModalBottomSheet<void>(
+                        //   context: context,
+                        //   builder: (BuildContext context) {
+                        //     return Container(
+                        //       height: 300,
+                        //       color: Colors.white,
+                        //       child: Center(
+                        //         child: Column(
+                        //           mainAxisAlignment: MainAxisAlignment.center,
+                        //           mainAxisSize: MainAxisSize.min,
+                        //           children: <Widget>[
+                        //             InputField(
+                        //                 hint: "IP of map",
+                        //                 icon: Icons.network_check_outlined,
+                        //                 controller: ip),
+                        //             ElevatedButton(
+                        //               child: const Text('Connect'),
+                        //               onPressed: () {
+                        //                 if (ip.text.isNotEmpty) {
+                        //                   Constants.setMapIP(
+                        //                       ip.text.toString());
+                        //                   Navigator.pop(context);
+                        //                 }
+                        //               },
+                        //             )
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     );
+                        //   },
+                        // );
                       },
                       child: Container(
                         padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
@@ -172,7 +181,7 @@ class _LoginState extends State<Login> {
                             ],
                             borderRadius: BorderRadius.circular(100)),
                         child: const Text(
-                          "Forget Password",
+                          "Signup Organization",
                           style: TextStyle(fontSize: 16, color: Colors.black38),
                         ),
                       ),

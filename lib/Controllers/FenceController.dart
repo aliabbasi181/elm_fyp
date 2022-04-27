@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:elm_fyp/Models/FenceModel.dart';
 import 'package:elm_fyp/Views/constants.dart';
@@ -73,5 +72,34 @@ class FenceController {
     } catch (ex) {
       print(ex);
     }
+  }
+
+  Future<List<dynamic>> getAssignedFences() async {
+    List<dynamic> assignedFences = [];
+    try {
+      String url = Constants.baseURL + "/geo/polygon/get-assigned-fences";
+      var response = await Dio()
+          .get(url, options: Options(headers: Constants.requestHeaders));
+      assignedFences = response.data['data'];
+      return assignedFences;
+    } catch (ex) {
+      print(ex);
+      return assignedFences;
+    }
+  }
+
+  Future<dynamic> getFenceById(String id) async {
+    dynamic fence;
+    try {
+      String url = Constants.baseURL + "/geo/polygon/polygonDetail";
+      Map<String, dynamic> payload = {
+        "id": id,
+      };
+      var response = await Dio().post(url, data: payload);
+      fence = response.data['data'];
+    } catch (ex) {
+      print(ex);
+    }
+    return fence;
   }
 }

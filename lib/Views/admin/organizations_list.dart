@@ -1,6 +1,7 @@
 import 'package:elm_fyp/BLoc/application_bloc.dart';
 import 'package:elm_fyp/Models/OrganizationModel.dart';
 import 'package:elm_fyp/Views/admin/add_organization.dart';
+import 'package:elm_fyp/Views/admin/organization_profile_detail.dart';
 import 'package:elm_fyp/Views/constants.dart';
 import 'package:elm_fyp/Views/widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -42,6 +43,9 @@ class _OrganizationsListState extends State<OrganizationsList> {
           email: item['email'],
           address: item['address'],
           role: item['role'],
+          isConfirmed: item['isConfirmed'],
+          createdAt:
+              item['createdAt'].toString().split(':').first.split('T').first,
           phone: item['phone']));
     }
     organizations = List.from(organizations.reversed);
@@ -121,16 +125,29 @@ class _OrganizationsListState extends State<OrganizationsList> {
                                   style: FontStyle(
                                       30, Colors.white, FontWeight.bold),
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Icon(
-                                    Icons.map_outlined,
-                                    color: Constants.primaryColor,
-                                    size: 20,
-                                  ),
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(100)),
+                                Stack(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Icon(
+                                        Icons.filter_alt,
+                                        color: Constants.primaryColor,
+                                        size: 20,
+                                      ),
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(100)),
+                                    ),
+                                    Container(
+                                      height: 10,
+                                      width: 10,
+                                      decoration: BoxDecoration(
+                                          color: Colors.black,
+                                          borderRadius:
+                                              BorderRadius.circular(100)),
+                                    )
+                                  ],
                                 )
                               ],
                             ),
@@ -218,7 +235,15 @@ class _OrganizationsListState extends State<OrganizationsList> {
                               itemCount: organizations.length,
                               itemBuilder: (context, index) {
                                 return InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                OrganizationProfileDetail(
+                                                    organization:
+                                                        organizations[index])));
+                                  },
                                   child: Container(
                                     padding: const EdgeInsets.only(
                                         left: 20,
@@ -261,14 +286,39 @@ class _OrganizationsListState extends State<OrganizationsList> {
                                                         20,
                                                         Constants.primaryColor,
                                                         FontWeight.w500)),
-                                                Text(
-                                                    organizations[index]
-                                                        .email
-                                                        .toString(),
-                                                    style: FontStyle(
-                                                        12,
-                                                        Colors.black38,
-                                                        FontWeight.w400)),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                        organizations[index]
+                                                            .email
+                                                            .toString(),
+                                                        style: FontStyle(
+                                                            12,
+                                                            Colors.black38,
+                                                            FontWeight.w400)),
+                                                    Container(
+                                                      child: Text(
+                                                          organizations[index]
+                                                                      .isConfirmed
+                                                                      .toString() ==
+                                                                  "true"
+                                                              ? "Active"
+                                                              : "Unactive",
+                                                          style: FontStyle(
+                                                              12,
+                                                              organizations[index]
+                                                                          .isConfirmed
+                                                                          .toString() ==
+                                                                      "true"
+                                                                  ? Colors.green
+                                                                  : Colors.red,
+                                                              FontWeight.w400)),
+                                                    ),
+                                                  ],
+                                                ),
                                               ],
                                             )),
                                             InkWell(
@@ -283,49 +333,48 @@ class _OrganizationsListState extends State<OrganizationsList> {
                                                             CupertinoActionSheetAction(
                                                               onPressed:
                                                                   () async {
-                                                                setState(() {
-                                                                  organizations.removeWhere((element) =>
-                                                                      element
-                                                                          .sId ==
-                                                                      organizations[
-                                                                              index]
-                                                                          .sId);
-                                                                });
+                                                                var data =
+                                                                    await applicationBloc
+                                                                        .organizationUpdateStatus(
+                                                                  organizations[
+                                                                          index]
+                                                                      .sId
+                                                                      .toString(),
+                                                                  organizations[index]
+                                                                              .isConfirmed
+                                                                              .toString() ==
+                                                                          "true"
+                                                                      ? false
+                                                                      : true,
+                                                                );
+                                                                if (data.name !=
+                                                                    null) {
+                                                                  setState(() {
+                                                                    organizations[
+                                                                            index] =
+                                                                        data;
+                                                                  });
+                                                                }
                                                                 Navigator.pop(
                                                                     context);
                                                               },
                                                               child: Text(
-                                                                "Delete",
-                                                                style: FontStyle(
-                                                                    18,
-                                                                    Colors.red,
-                                                                    FontWeight
-                                                                        .w400),
-                                                              ),
-                                                            ),
-                                                            CupertinoActionSheetAction(
-                                                              onPressed: () {},
-                                                              child: Text(
-                                                                "Edit",
-                                                                style: FontStyle(
-                                                                    18,
-                                                                    Colors
-                                                                        .black,
-                                                                    FontWeight
-                                                                        .w400),
-                                                              ),
-                                                            ),
-                                                            CupertinoActionSheetAction(
-                                                              onPressed: () {},
-                                                              child: Text(
-                                                                "Assign Fence",
-                                                                style: FontStyle(
-                                                                    18,
-                                                                    Colors
-                                                                        .black,
-                                                                    FontWeight
-                                                                        .w400),
-                                                              ),
+                                                                  organizations[index]
+                                                                              .isConfirmed
+                                                                              .toString() ==
+                                                                          "true"
+                                                                      ? "Unactive"
+                                                                      : "Active",
+                                                                  style: FontStyle(
+                                                                      20,
+                                                                      organizations[index].isConfirmed.toString() ==
+                                                                              "true"
+                                                                          ? Colors
+                                                                              .red
+                                                                          : Constants
+                                                                              .primaryColor,
+                                                                      FontWeight
+                                                                          .w400)),
                                                             ),
                                                           ],
                                                           cancelButton:
@@ -362,10 +411,19 @@ class _OrganizationsListState extends State<OrganizationsList> {
                         child: Container(
                           height: Constants.screenHeight(context) * 0.59,
                           child: ListView.builder(
+                            padding: EdgeInsets.zero,
                             itemCount: searchResults.length,
                             itemBuilder: (context, index) {
                               return InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              OrganizationProfileDetail(
+                                                  organization:
+                                                      searchResults[index])));
+                                },
                                 child: Container(
                                   padding: const EdgeInsets.only(
                                       left: 20, right: 10, top: 15, bottom: 15),
@@ -397,21 +455,46 @@ class _OrganizationsListState extends State<OrganizationsList> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                  organizations[index]
+                                                  searchResults[index]
                                                       .name
                                                       .toString(),
                                                   style: FontStyle(
                                                       20,
                                                       Constants.primaryColor,
                                                       FontWeight.w500)),
-                                              Text(
-                                                  organizations[index]
-                                                      .email
-                                                      .toString(),
-                                                  style: FontStyle(
-                                                      12,
-                                                      Colors.black38,
-                                                      FontWeight.w400)),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                      searchResults[index]
+                                                          .email
+                                                          .toString(),
+                                                      style: FontStyle(
+                                                          12,
+                                                          Colors.black38,
+                                                          FontWeight.w400)),
+                                                  Container(
+                                                    child: Text(
+                                                        searchResults[index]
+                                                                    .isConfirmed
+                                                                    .toString() ==
+                                                                "true"
+                                                            ? "Active"
+                                                            : "Unactive",
+                                                        style: FontStyle(
+                                                            12,
+                                                            searchResults[index]
+                                                                        .isConfirmed
+                                                                        .toString() ==
+                                                                    "true"
+                                                                ? Colors.green
+                                                                : Colors.red,
+                                                            FontWeight.w400)),
+                                                  ),
+                                                ],
+                                              ),
                                             ],
                                           )),
                                           InkWell(
@@ -420,77 +503,68 @@ class _OrganizationsListState extends State<OrganizationsList> {
                                                   barrierColor: Colors.black
                                                       .withOpacity(0.5),
                                                   context: context,
-                                                  builder: (context) =>
-                                                      CupertinoActionSheet(
-                                                        actions: [
-                                                          CupertinoActionSheetAction(
-                                                            onPressed:
-                                                                () async {
-                                                              Navigator.pop(
-                                                                  context);
-                                                              if (await _onDelete(
-                                                                  searchResults[
-                                                                          index]
-                                                                      .sId
-                                                                      .toString())) {
-                                                                setState(() {
-                                                                  searchResults.removeWhere((element) =>
-                                                                      element
-                                                                          .sId ==
+                                                  builder:
+                                                      (context) =>
+                                                          CupertinoActionSheet(
+                                                            actions: [
+                                                              CupertinoActionSheetAction(
+                                                                onPressed:
+                                                                    () async {
+                                                                  var data =
+                                                                      await applicationBloc
+                                                                          .organizationUpdateStatus(
+                                                                    searchResults[
+                                                                            index]
+                                                                        .sId
+                                                                        .toString(),
+                                                                    searchResults[index].isConfirmed.toString() ==
+                                                                            "true"
+                                                                        ? false
+                                                                        : true,
+                                                                  );
+                                                                  if (data.name !=
+                                                                      null) {
+                                                                    setState(
+                                                                        () {
                                                                       searchResults[
-                                                                              index]
-                                                                          .sId);
-                                                                  organizations.removeWhere((element) =>
-                                                                      element
-                                                                          .sId ==
-                                                                      organizations[
-                                                                              index]
-                                                                          .sId);
-                                                                });
-                                                              }
-                                                            },
-                                                            child: Text(
-                                                              "Delete",
-                                                              style: FontStyle(
-                                                                  18,
-                                                                  Colors.red,
-                                                                  FontWeight
-                                                                      .w400),
+                                                                              index] =
+                                                                          data;
+                                                                      organizations[organizations.indexWhere((element) =>
+                                                                          element
+                                                                              .sId ==
+                                                                          data.sId)] = data;
+                                                                    });
+                                                                  }
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                child: Text(
+                                                                    searchResults[index].isConfirmed.toString() ==
+                                                                            "true"
+                                                                        ? "Unactive"
+                                                                        : "Active",
+                                                                    style: FontStyle(
+                                                                        20,
+                                                                        searchResults[index].isConfirmed.toString() ==
+                                                                                "true"
+                                                                            ? Colors
+                                                                                .red
+                                                                            : Constants
+                                                                                .primaryColor,
+                                                                        FontWeight
+                                                                            .w400)),
+                                                              ),
+                                                            ],
+                                                            cancelButton:
+                                                                CupertinoActionSheetAction(
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child: const Text(
+                                                                  "Cancel"),
                                                             ),
-                                                          ),
-                                                          CupertinoActionSheetAction(
-                                                            onPressed: () {},
-                                                            child: Text(
-                                                              "Edit",
-                                                              style: FontStyle(
-                                                                  18,
-                                                                  Colors.black,
-                                                                  FontWeight
-                                                                      .w400),
-                                                            ),
-                                                          ),
-                                                          CupertinoActionSheetAction(
-                                                            onPressed: () {},
-                                                            child: Text(
-                                                              "Assign Fence",
-                                                              style: FontStyle(
-                                                                  18,
-                                                                  Colors.black,
-                                                                  FontWeight
-                                                                      .w400),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                        cancelButton:
-                                                            CupertinoActionSheetAction(
-                                                          onPressed: () {
-                                                            Navigator.pop(
-                                                                context);
-                                                          },
-                                                          child: const Text(
-                                                              "Cancel"),
-                                                        ),
-                                                      ));
+                                                          ));
                                             },
                                             child: const Icon(
                                               Icons.keyboard_arrow_down_rounded,
@@ -516,7 +590,7 @@ class _OrganizationsListState extends State<OrganizationsList> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const AddOrganization()));
+                          builder: (context) => AddOrganization()));
                 },
               ),
             ],
