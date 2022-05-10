@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:elm_fyp/Controllers/EmployeeController.dart';
 import 'package:elm_fyp/Models/EmployeeModel.dart';
 import 'package:elm_fyp/Models/EmpoloyeeLocationModel.dart';
 import 'package:elm_fyp/Views/constants.dart';
@@ -55,6 +56,85 @@ class EmployeeLocationController {
       var responce = await Dio().post(url, data: payload);
       print(responce.data);
       return responce.data['data'][0];
+    } catch (ex) {}
+  }
+
+  Future<dynamic> getEmployeeLocationsOnDateAndTimeRange(String dateFrom,
+      String dateTo, String timeFrom, String timeTo, String id) async {
+    String url = Constants.baseURL +
+        "/employee/get-employee-location-on-date-and-time-range";
+    try {
+      Map<String, dynamic> payload = {
+        "employee": id,
+        "from_date": dateFrom,
+        "to_date": dateTo,
+        "time_from": timeFrom,
+        "time_to": timeTo
+      };
+      var responce = await Dio().post(url, data: payload);
+      print(responce.data);
+      return responce.data['data'];
+    } catch (ex) {}
+  }
+
+  Future<dynamic> getEmployeeLocationsOnTimeRange(
+      String date, String timeFrom, String timeTo, String id) async {
+    String url =
+        Constants.baseURL + "/employee/get-employee-location-on-time-range";
+    try {
+      Map<String, dynamic> payload = {
+        "employee": id,
+        "date": date,
+        "time_from": timeFrom,
+        "time_to": timeTo
+      };
+      var responce = await Dio().post(url, data: payload);
+      print(responce.data);
+      return responce.data['data'];
+    } catch (ex) {}
+  }
+
+  Future<dynamic> getEmployeeLocationsOnDateRange(
+      String dateFrom, String dateTo, String id) async {
+    String url =
+        Constants.baseURL + "/employee/get-employee-location-on-two-dates";
+    try {
+      Map<String, dynamic> payload = {
+        "employee": id,
+        "from_date": dateFrom,
+        "to_date": dateTo,
+      };
+      var responce = await Dio().post(url, data: payload);
+      print(responce.data);
+      return responce.data['data'];
+    } catch (ex) {}
+  }
+
+  getEmployeesLastLocation() async {
+    String url = Constants.baseURL + "/employee/get-employees-last-location";
+    try {
+      var responce = await Dio()
+          .get(url, options: Options(headers: Constants.requestHeaders));
+      for (var item in responce.data['data']) {
+        if (item['inFence'].toString() == "false") {
+          EmployeeController employeeController = EmployeeController();
+          var res =
+              await employeeController.employeeDetailById(item['employeeId']);
+          print(res['name'] + " is out of fence");
+        }
+      }
+      return responce.data['data'];
+    } catch (ex) {}
+  }
+
+  Future<dynamic> getEmployeesLocationOnFenceId(String id, String date) async {
+    String url =
+        Constants.baseURL + "/employee/get-employees-locations-on-fence-id";
+    try {
+      Map<String, dynamic> payload = {"id": id, "date": date};
+      print(payload);
+      var responce = await Dio().post(url, data: payload);
+      return responce.data['data'];
     } catch (ex) {}
   }
 }

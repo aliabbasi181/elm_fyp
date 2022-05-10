@@ -102,4 +102,14 @@ class FenceController {
     }
     return fence;
   }
+
+  Future<dynamic> getEmployeesLastLocation() async {
+    String url = Constants.baseURL + "/employee/get-employees-last-location";
+    try {
+      var responce = await Dio()
+          .post(url, options: Options(headers: Constants.requestHeaders));
+      print(responce.data);
+      return responce.data['data'];
+    } catch (ex) {}
+  }
 }

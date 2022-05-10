@@ -48,6 +48,8 @@ dependencies:
   another_flushbar: ^1.10.28
   pull_to_refresh: ^2.0.0
   shared_preferences: ^2.0.13
+  cron: ^0.5.0
+  geolocator: ^8.2.0
 
 
   # The following adds the Cupertino Icons font to your application.

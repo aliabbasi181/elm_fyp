@@ -4,6 +4,7 @@ import 'package:elm_fyp/Models/EmployeeModel.dart';
 import 'package:elm_fyp/Models/EmpoloyeeLocationModel.dart';
 import 'package:elm_fyp/Models/FenceModel.dart';
 import 'package:elm_fyp/Views/constants.dart';
+import 'package:elm_fyp/Views/employee/employee_history.dart';
 import 'package:elm_fyp/Views/employee/employee_locations_log.dart';
 import 'package:elm_fyp/Views/employee/home.dart';
 import 'package:flutter/cupertino.dart';
@@ -162,7 +163,7 @@ class _EmployeeDetailsState extends State<EmployeeDetails> {
                 height: Constants.screenWidth(context) * 0.015,
               ),
               Container(
-                height: Constants.screenHeight(context) * 0.60,
+                height: Constants.screenHeight(context) * 0.6,
                 width: Constants.screenWidth(context),
                 padding: const EdgeInsets.all(0),
                 margin: const EdgeInsets.only(bottom: 15),
@@ -175,133 +176,117 @@ class _EmployeeDetailsState extends State<EmployeeDetails> {
                   ],
                   color: Constants.primaryColor,
                 ),
-                child: FlutterMap(
-                  mapController: mapController,
-                  options: MapOptions(
-                    center: center,
-                    zoom: _zoomValue,
-                    onTap: (position, latlng) async {},
-                  ),
-                  layers: [
-                    TileLayerOptions(
-                      urlTemplate: Constants.mapURL,
-                    ),
-                    PolylineLayerOptions(polylines: [
-                      Polyline(
-                          color: Colors.red,
-                          strokeWidth: 8,
-                          isDotted: true,
-                          points: latlnglist)
-                    ]),
-                    PolylineLayerOptions(polylines: [
-                      Polyline(
-                          color: Colors.black,
-                          strokeWidth: 5,
-                          points: fenceList)
-                    ]),
-                    MarkerLayerOptions(
-                      markers: [
-                        Marker(
-                          point: latlnglist.isNotEmpty
-                              ? latlnglist.last
-                              : LatLng(0, 0),
-                          builder: (ctx) => Container(
-                            decoration: const BoxDecoration(boxShadow: [
-                              BoxShadow(color: Colors.black54, blurRadius: 10),
-                            ]),
-                            child: const Icon(
-                              Icons.circle_rounded,
-                              size: 20,
-                              color: Colors.black,
-                            ),
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Container(
+                        height: Constants.screenHeight(context) * 0.6,
+                        width: Constants.screenWidth(context),
+                        child: FlutterMap(
+                          mapController: mapController,
+                          options: MapOptions(
+                            center: center,
+                            zoom: _zoomValue,
+                            onTap: (position, latlng) {
+                              print("${latlng.latitude},${latlng.longitude}");
+                              setState(() {
+                                latlnglist.add(latlng);
+                              });
+                            },
                           ),
+                          layers: [
+                            TileLayerOptions(
+                              urlTemplate: Constants.mapURL,
+                            ),
+                            PolylineLayerOptions(polylines: [
+                              Polyline(
+                                  color: Colors.red,
+                                  strokeWidth: 8,
+                                  isDotted: true,
+                                  points: latlnglist)
+                            ]),
+                            PolylineLayerOptions(polylines: [
+                              Polyline(
+                                  color: Colors.black,
+                                  strokeWidth: 5,
+                                  points: fenceList)
+                            ]),
+                            MarkerLayerOptions(
+                              markers: [
+                                Marker(
+                                  point: latlnglist.isNotEmpty
+                                      ? latlnglist.last
+                                      : LatLng(0, 0),
+                                  builder: (ctx) => Container(
+                                    decoration: const BoxDecoration(boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.black54,
+                                          blurRadius: 10),
+                                    ]),
+                                    child: const Icon(
+                                      Icons.circle_rounded,
+                                      size: 20,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Container(
+                        height: 60,
+                        width: 35,
+                        decoration: BoxDecoration(
+                            color: Constants.primaryColor,
+                            borderRadius: BorderRadius.circular(5)),
+                        margin: const EdgeInsets.only(bottom: 10, right: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                var temp = _zoomValue;
+                                if (temp++ < 16 || temp++ == 16) {
+                                  setState(() {
+                                    _zoomValue++;
+                                    mapController.move(center, _zoomValue);
+                                  });
+                                }
+                              },
+                              child: Icon(
+                                CupertinoIcons.plus,
+                                size: 24,
+                                color: Colors.white,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                var temp = _zoomValue;
+                                if (temp-- > 5 || temp-- == 5) {
+                                  setState(() {
+                                    _zoomValue--;
+                                    mapController.move(center, _zoomValue);
+                                  });
+                                }
+                              },
+                              child: Icon(
+                                CupertinoIcons.minus,
+                                size: 24,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                   ],
                 ),
-              ),
-              Row(
-                children: [
-                  InkWell(
-                    onTap: () {
-                      var temp = _zoomValue;
-                      if (temp-- > 5 || temp-- == 5) {
-                        setState(() {
-                          _zoomValue--;
-                          if (latlnglist.isEmpty) {
-                            mapController.move(center, _zoomValue);
-                          } else {
-                            var latlng = LatLng(latlnglist.last.latitude,
-                                latlnglist.last.longitude);
-                            mapController.move(latlng, _zoomValue);
-                          }
-                        });
-                      }
-                    },
-                    child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(color: Colors.black54, blurRadius: 5)
-                            ],
-                            borderRadius: BorderRadius.circular(100)),
-                        child: Icon(
-                          CupertinoIcons.minus,
-                          size: 16,
-                        )),
-                  ),
-                  Expanded(
-                    child: Slider(
-                        activeColor: Constants.primaryColor,
-                        min: 5,
-                        max: 15.4,
-                        label: "Zoom Level",
-                        value: _zoomValue,
-                        onChanged: (value) {
-                          setState(() {
-                            _zoomValue = value;
-                            if (latlnglist.isEmpty) {
-                              mapController.move(center, _zoomValue);
-                            } else {
-                              var latlng = LatLng(latlnglist.last.latitude,
-                                  latlnglist.last.longitude);
-                              mapController.move(latlng, value);
-                            }
-                          });
-                        }),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      var temp = _zoomValue;
-                      if (temp++ < 15.4 || temp++ == 15.4) {
-                        setState(() {
-                          _zoomValue++;
-                          if (latlnglist.isEmpty) {
-                            mapController.move(center, _zoomValue);
-                          } else {
-                            var latlng = LatLng(latlnglist.last.latitude,
-                                latlnglist.last.longitude);
-                            mapController.move(latlng, _zoomValue);
-                          }
-                        });
-                      }
-                    },
-                    child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(color: Colors.black54, blurRadius: 5)
-                            ],
-                            borderRadius: BorderRadius.circular(100)),
-                        child: Icon(
-                          CupertinoIcons.plus,
-                          size: 16,
-                        )),
-                  ),
-                ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -368,16 +353,16 @@ class _EmployeeDetailsState extends State<EmployeeDetails> {
                                         }),
                                   ],
                                 ));
-                        return;
+                      } else {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EmployeeLocationsLog(
+                                    name: widget.employee.name.toString(),
+                                    assignedFence: todaysFence.name.toString(),
+                                    employeeLocationModel:
+                                        employeeLocationModel)));
                       }
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EmployeeLocationsLog(
-                                  name: widget.employee.name.toString(),
-                                  assignedFence: todaysFence.name.toString(),
-                                  employeeLocationModel:
-                                      employeeLocationModel)));
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -395,7 +380,16 @@ class _EmployeeDetailsState extends State<EmployeeDetails> {
               ),
             ],
           ))),
-      NavBox(buttonText: "View History", onPress: () {})
+      NavBox(
+          buttonText: "View History",
+          onPress: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EmployeeHistory(
+                          employeeId: widget.employee.sId.toString(),
+                        )));
+          })
     ]));
   }
 }

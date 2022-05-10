@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:elm_fyp/BLoc/application_bloc.dart';
 import 'package:elm_fyp/Models/FenceModel.dart';
 import 'package:elm_fyp/Views/constants.dart';
 import 'package:elm_fyp/Views/organization/update_fence.dart';
@@ -6,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 
 class FenceDetail extends StatefulWidget {
   FenceModel fence;
@@ -22,6 +26,9 @@ class _FenceDetailState extends State<FenceDetail> {
   List<Marker> marker = [];
   LatLng? center;
   double _zoomValue = 14;
+  List<Polyline> allLines = [];
+  List<Marker> allMarkers = [];
+  Timer? timer;
   @override
   initState() {
     super.initState();
@@ -35,6 +42,63 @@ class _FenceDetailState extends State<FenceDetail> {
     lat = lat / widget.fence.points!.length;
     lng = lng / widget.fence.points!.length;
     center = LatLng(lat, lng);
+    allLines.add(Polyline(
+        points: latlnglist, strokeWidth: 5, color: Constants.primaryColor));
+    getLocations();
+    timer = Timer.periodic(Duration(seconds: 3), (Timer t) {
+      getLocations();
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  getLocations() async {
+    allMarkers = [];
+    final applicationBloc =
+        Provider.of<ApplicationBloc>(context, listen: false);
+
+    var today = DateTime.now();
+    var data = await applicationBloc.getEmployeesLastLocation();
+    for (var item in data) {
+      if (item['fenceId'].toString() == widget.fence.sId.toString()) {
+        var emp =
+            await applicationBloc.getEmployeeDetailById(item['employeeId']);
+        allMarkers.add(Marker(
+            width: 150,
+            height: 50,
+            point: LatLng(double.parse(item['lat'].toString()),
+                double.parse(item['lng'].toString())),
+            builder: (context) {
+              return Column(
+                children: [
+                  Container(
+                    color: Constants.primaryColor,
+                    child: Text(
+                      emp['name'],
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  Icon(Icons.circle),
+                ],
+              );
+            }));
+      }
+    }
+    setState(() {});
+    // var data = await applicationBloc.getEmployeesLocationOnFenceId(
+    //     widget.fence.sId.toString(),
+    //     "${today.day}/${today.month}/${today.year}");
+    // List<LatLng> points = [];
+    // for (var item in data) {
+    //   points = [];
+    //   print(item['']);
+    //   allLines.add(Polyline(
+    //       points: points, strokeWidth: 5, isDotted: true, color: Colors.black));
+    // }
   }
 
   Widget build(BuildContext context) {
@@ -134,11 +198,11 @@ class _FenceDetailState extends State<FenceDetail> {
                         TileLayerOptions(urlTemplate: Constants.mapURL),
                         PolylineLayerOptions(polylines: [
                           Polyline(
-                              color: Colors.black,
+                              points: latlnglist,
                               strokeWidth: 5,
-                              points: latlnglist)
+                              color: Constants.primaryColor)
                         ]),
-                        MarkerLayerOptions(markers: marker),
+                        MarkerLayerOptions(markers: allMarkers),
                       ],
                     ),
                   ),

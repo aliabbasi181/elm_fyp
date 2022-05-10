@@ -68,6 +68,19 @@ class EmployeeController {
     }
   }
 
+  employeeDetailById(String id) async {
+    String url = Constants.baseURL + "/employee/get-employee-by-id";
+    try {
+      Map<String, dynamic> payload = {"id": id};
+      var response = await Dio().post(url, data: payload);
+      if (response.statusCode == 200) {
+        return response.data['data'];
+      }
+    } catch (ex) {
+      print(ex.toString());
+    }
+  }
+
   Future<EmployeeModel> employeeUpdateStatus(String id, bool status) async {
     String url = Constants.baseURL + "/employee/change-active-status";
     EmployeeModel organization = EmployeeModel();

@@ -45,7 +45,8 @@ class _OrganizationsListState extends State<FencesList> {
       for (var item in item['points']) {
         points.add(Points(lat: item['lat'], lng: item['lng']));
       }
-      fences.add(FenceModel(name: item['name'], points: points));
+      fences.add(
+          FenceModel(name: item['name'], points: points, sId: item['_id']));
     }
     setState(() {});
   }

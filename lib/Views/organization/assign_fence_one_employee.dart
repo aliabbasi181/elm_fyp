@@ -94,7 +94,7 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                     height: 10,
                   ),
                   Container(
-                    height: Constants.screenHeight(context) * 0.40,
+                    height: Constants.screenHeight(context) * 0.4,
                     width: Constants.screenWidth(context),
                     padding: const EdgeInsets.all(0),
                     margin: const EdgeInsets.only(bottom: 15),
@@ -107,95 +107,90 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                       ],
                       color: Constants.primaryColor,
                     ),
-                    child: FlutterMap(
-                      mapController: mapController,
-                      options: MapOptions(
-                        center: fenceList.first,
-                        zoom: _zoomValue,
-                        onTap: (position, latlng) {
-                          print("${latlng.latitude},${latlng.longitude}");
-                          setState(() {
-                            latlnglist.add(latlng);
-                          });
-                        },
-                      ),
-                      layers: [
-                        TileLayerOptions(urlTemplate: Constants.mapURL),
-                        PolygonLayerOptions(polygons: [
-                          Polygon(
-                              points: fenceList,
-                              color: Colors.transparent,
-                              borderColor: Colors.black,
-                              borderStrokeWidth: 5)
-                        ]),
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Container(
+                            height: Constants.screenHeight(context) * 0.4,
+                            width: Constants.screenWidth(context),
+                            child: FlutterMap(
+                              mapController: mapController,
+                              options: MapOptions(
+                                center: fenceList.first,
+                                zoom: _zoomValue,
+                                onTap: (position, latlng) {
+                                  print(
+                                      "${latlng.latitude},${latlng.longitude}");
+                                  setState(() {
+                                    latlnglist.add(latlng);
+                                  });
+                                },
+                              ),
+                              layers: [
+                                TileLayerOptions(urlTemplate: Constants.mapURL),
+                                PolygonLayerOptions(polygons: [
+                                  Polygon(
+                                      points: fenceList,
+                                      color: Colors.transparent,
+                                      borderColor: Colors.black,
+                                      borderStrokeWidth: 5)
+                                ]),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Container(
+                            height: 60,
+                            width: 35,
+                            decoration: BoxDecoration(
+                                color: Constants.primaryColor,
+                                borderRadius: BorderRadius.circular(5)),
+                            margin:
+                                const EdgeInsets.only(bottom: 10, right: 10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    var temp = _zoomValue;
+                                    if (temp++ < 16 || temp++ == 16) {
+                                      setState(() {
+                                        _zoomValue++;
+                                        mapController.move(center, _zoomValue);
+                                      });
+                                    }
+                                  },
+                                  child: Icon(
+                                    CupertinoIcons.plus,
+                                    size: 24,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    var temp = _zoomValue;
+                                    if (temp-- > 5 || temp-- == 5) {
+                                      setState(() {
+                                        _zoomValue--;
+                                        mapController.move(center, _zoomValue);
+                                      });
+                                    }
+                                  },
+                                  child: Icon(
+                                    CupertinoIcons.minus,
+                                    size: 24,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
                       ],
                     ),
-                  ),
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          var temp = _zoomValue;
-                          if (temp-- > 5 || temp-- == 5) {
-                            setState(() {
-                              _zoomValue--;
-                              mapController.move(center, _zoomValue);
-                            });
-                          }
-                        },
-                        child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black54, blurRadius: 5)
-                                ],
-                                borderRadius: BorderRadius.circular(100)),
-                            child: Icon(
-                              CupertinoIcons.minus,
-                              size: 16,
-                            )),
-                      ),
-                      Expanded(
-                        child: Slider(
-                            activeColor: Constants.primaryColor,
-                            min: 5,
-                            max: 16,
-                            label: "Zoom Level",
-                            value: _zoomValue,
-                            onChanged: (value) {
-                              setState(() {
-                                _zoomValue = value;
-                                mapController.move(center, value);
-                              });
-                            }),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          var temp = _zoomValue;
-                          if (temp++ < 16 || temp++ == 16) {
-                            setState(() {
-                              _zoomValue++;
-                              mapController.move(center, _zoomValue);
-                            });
-                          }
-                        },
-                        child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black54, blurRadius: 5)
-                                ],
-                                borderRadius: BorderRadius.circular(100)),
-                            child: Icon(
-                              CupertinoIcons.plus,
-                              size: 16,
-                            )),
-                      ),
-                    ],
                   ),
                   InkWell(
                     onTap: () async {
@@ -312,7 +307,7 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                           });
                         },
                         child: Container(
-                          width: Constants.screenWidth(context) * 0.2,
+                          width: Constants.screenWidth(context) * 0.15,
                           margin: const EdgeInsets.only(bottom: 5),
                           padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                           child: Column(
@@ -379,7 +374,7 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                           setState(() {});
                         },
                         child: Container(
-                          width: Constants.screenWidth(context) * 0.2,
+                          width: Constants.screenWidth(context) * 0.15,
                           margin: const EdgeInsets.only(bottom: 5),
                           padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                           child: Column(
@@ -459,7 +454,7 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                           setState(() {});
                         },
                         child: Container(
-                          width: Constants.screenWidth(context) * 0.2,
+                          width: Constants.screenWidth(context) * 0.15,
                           margin: const EdgeInsets.only(bottom: 5),
                           padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                           child: Row(
@@ -520,7 +515,7 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                           setState(() {});
                         },
                         child: Container(
-                          width: Constants.screenWidth(context) * 0.2,
+                          width: Constants.screenWidth(context) * 0.15,
                           margin: const EdgeInsets.only(bottom: 5),
                           padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                           child: Row(

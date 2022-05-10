@@ -38,7 +38,7 @@ class _OrganizationNavState extends State<OrganizationNav> {
     } else {
       _pageController = PageController(initialPage: 1);
     }
-    // timer = Timer.periodic(Duration(seconds: 2), (Timer t) {
+    // timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
     //   print(DateTime.now());
     // });
   }

@@ -145,4 +145,36 @@ class ApplicationBloc with ChangeNotifier {
   Future<EmployeeModel> employeeUpdateStatus(String id, bool status) async {
     return await employeeController.employeeUpdateStatus(id, status);
   }
+
+  Future<dynamic> getEmployeeLocationsOnDateRange(
+      String dateFrom, String dateTo, String id) async {
+    return await employeeLocationController.getEmployeeLocationsOnDateRange(
+        dateFrom, dateTo, id);
+  }
+
+  Future<dynamic> getEmployeeLocationsOnTimeRange(
+      String date, String timeFrom, String timeTo, String id) async {
+    return await employeeLocationController.getEmployeeLocationsOnTimeRange(
+        date, timeFrom, timeTo, id);
+  }
+
+  Future<dynamic> getEmployeeLocationsOnDateAndTimeRange(String dateFrom,
+      String dateTo, String timeFrom, String timeTo, String id) async {
+    return await employeeLocationController
+        .getEmployeeLocationsOnDateAndTimeRange(
+            dateFrom, dateTo, timeFrom, timeTo, id);
+  }
+
+  Future<dynamic> getEmployeesLastLocation() async {
+    return await employeeLocationController.getEmployeesLastLocation();
+  }
+
+  Future<dynamic> getEmployeesLocationOnFenceId(String id, String date) async {
+    return await employeeLocationController.getEmployeesLocationOnFenceId(
+        id, date);
+  }
+
+  Future<dynamic> getEmployeeDetailById(String id) async {
+    return await employeeController.employeeDetailById(id);
+  }
 }

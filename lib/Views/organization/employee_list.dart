@@ -426,7 +426,13 @@ class _OrganizationsListState extends State<EmployeeList> {
                             itemCount: searchResults.length,
                             itemBuilder: (context, index) {
                               return InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => EmployeeDetails(
+                                              employee: searchResults[index])));
+                                },
                                 child: Container(
                                   padding: const EdgeInsets.only(
                                       left: 20, right: 10, top: 15, bottom: 15),
