@@ -2,6 +2,8 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:elm_fyp/SharedPreferences/local_storage.dart';
 import 'package:elm_fyp/Views/constants.dart';
 import 'package:elm_fyp/Views/login_register/login.dart';
+import 'package:elm_fyp/Views/organization/add_employee.dart';
+import 'package:elm_fyp/Views/organization/create_fence.dart';
 import 'package:elm_fyp/Views/organization/update_profile.dart';
 import 'package:elm_fyp/Views/widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -151,12 +153,22 @@ class _OrganizationProfileState extends State<OrganizationProfile> {
                           UserOptions(
                             text: "Add Fence",
                             icon: Icons.near_me_rounded,
-                            onPress: () {},
+                            onPress: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CreateFence()));
+                            },
                           ),
                           UserOptions(
                             text: "Add Employee",
                             icon: Icons.person_add,
-                            onPress: () {},
+                            onPress: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEmployee()));
+                            },
                           ),
                           UserOptions(
                             text: "Logout",

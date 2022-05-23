@@ -39,7 +39,7 @@ class _EmployeeHomeState extends State<EmployeeHome> {
   String pickFence = "Select Location";
   List<AssignedFenceModel> assignedFences = [];
   FenceModel todaysFence = FenceModel(name: "Loading...");
-  double _zoomValue = 15;
+  double _zoomValue = 14;
   EmployeeLocationModel employeeLocationModel = EmployeeLocationModel();
   @override
   void initState() {
@@ -234,148 +234,128 @@ class _EmployeeHomeState extends State<EmployeeHome> {
                       ],
                       color: Constants.primaryColor,
                     ),
-                    child: FlutterMap(
-                      mapController: mapController,
-                      options: MapOptions(
-                        center: center,
-                        zoom: 14.5,
-                        onTap: (position, latlng) async {
-                          var today = DateTime.now();
-                          var dateInString =
-                              '${today.day}/${today.month}/${today.year}';
-                          var timeInString = '${today.hour}:${today.minute}';
-                          await applicationBloc.saveUserLocation(
-                              latlng, dateInString, timeInString, context);
-                          setState(() {
-                            latlnglist
-                                .add(LatLng(latlng.latitude, latlng.longitude));
-                          });
-                        },
-                      ),
-                      layers: [
-                        TileLayerOptions(
-                          urlTemplate: Constants.mapURL,
-                        ),
-                        PolylineLayerOptions(polylines: [
-                          Polyline(
-                              color: Colors.red,
-                              strokeWidth: 8,
-                              isDotted: true,
-                              points: latlnglist)
-                        ]),
-                        PolylineLayerOptions(polylines: [
-                          Polyline(
-                              color: Colors.black,
-                              strokeWidth: 5,
-                              points: fenceList)
-                        ]),
-                        MarkerLayerOptions(
-                          markers: [
-                            Marker(
-                              point: latlnglist.isNotEmpty
-                                  ? latlnglist.last
-                                  : LatLng(0, 0),
-                              builder: (ctx) => Container(
-                                decoration: const BoxDecoration(boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black54, blurRadius: 10),
-                                ]),
-                                child: const Icon(
-                                  Icons.circle_rounded,
-                                  size: 20,
-                                  color: Colors.black,
-                                ),
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Container(
+                            height: Constants.screenHeight(context) * 0.52,
+                            width: Constants.screenWidth(context),
+                            child: FlutterMap(
+                              mapController: mapController,
+                              options: MapOptions(
+                                center: center,
+                                zoom: _zoomValue,
+                                onTap: (position, latlng) async {
+                                  var today = DateTime.now();
+                                  var dateInString =
+                                      '${today.day}/${today.month}/${today.year}';
+                                  var timeInString =
+                                      '${today.hour}:${today.minute}';
+                                  await applicationBloc.saveUserLocation(latlng,
+                                      dateInString, timeInString, context);
+                                  setState(() {
+                                    latlnglist.add(LatLng(
+                                        latlng.latitude, latlng.longitude));
+                                  });
+                                },
                               ),
+                              layers: [
+                                TileLayerOptions(
+                                  urlTemplate: Constants.mapURL,
+                                ),
+                                PolylineLayerOptions(polylines: [
+                                  Polyline(
+                                      color: Constants.primaryColor,
+                                      strokeWidth: 8,
+                                      isDotted: true,
+                                      points: latlnglist)
+                                ]),
+                                PolylineLayerOptions(polylines: [
+                                  Polyline(
+                                      color: Colors.black,
+                                      strokeWidth: 5,
+                                      points: fenceList)
+                                ]),
+                                MarkerLayerOptions(
+                                  markers: [
+                                    Marker(
+                                      point: latlnglist.isNotEmpty
+                                          ? latlnglist.last
+                                          : LatLng(0, 0),
+                                      builder: (ctx) => Container(
+                                        decoration:
+                                            const BoxDecoration(boxShadow: [
+                                          BoxShadow(
+                                              color: Colors.black54,
+                                              blurRadius: 10),
+                                        ]),
+                                        child: const Icon(
+                                          Icons.circle_rounded,
+                                          size: 20,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Container(
+                            height: 60,
+                            width: 35,
+                            decoration: BoxDecoration(
+                                color: Constants.primaryColor,
+                                borderRadius: BorderRadius.circular(5)),
+                            margin:
+                                const EdgeInsets.only(bottom: 10, right: 10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    var temp = _zoomValue;
+                                    if (temp++ < 14 || temp++ == 14) {
+                                      setState(() {
+                                        _zoomValue++;
+                                        mapController.move(center, _zoomValue);
+                                      });
+                                    }
+                                  },
+                                  child: Icon(
+                                    CupertinoIcons.plus,
+                                    size: 24,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    var temp = _zoomValue;
+                                    if (temp-- > 5 || temp-- == 5) {
+                                      setState(() {
+                                        _zoomValue--;
+                                        mapController.move(center, _zoomValue);
+                                      });
+                                    }
+                                  },
+                                  child: Icon(
+                                    CupertinoIcons.minus,
+                                    size: 24,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          var temp = _zoomValue;
-                          if (temp-- > 5 || temp-- == 5) {
-                            setState(() {
-                              _zoomValue--;
-                              if (latlnglist.isEmpty) {
-                                mapController.move(center, _zoomValue);
-                              } else {
-                                var latlng = LatLng(latlnglist.last.latitude,
-                                    latlnglist.last.longitude);
-                                mapController.move(latlng, _zoomValue);
-                              }
-                            });
-                          }
-                        },
-                        child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black54, blurRadius: 5)
-                                ],
-                                borderRadius: BorderRadius.circular(100)),
-                            child: Icon(
-                              CupertinoIcons.minus,
-                              size: 16,
-                            )),
-                      ),
-                      Expanded(
-                        child: Slider(
-                            activeColor: Constants.primaryColor,
-                            min: 5,
-                            max: 15.4,
-                            label: "Zoom Level",
-                            value: _zoomValue,
-                            onChanged: (value) {
-                              setState(() {
-                                _zoomValue = value;
-                                if (latlnglist.isEmpty) {
-                                  mapController.move(center, _zoomValue);
-                                } else {
-                                  var latlng = LatLng(latlnglist.last.latitude,
-                                      latlnglist.last.longitude);
-                                  mapController.move(latlng, value);
-                                }
-                              });
-                            }),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          var temp = _zoomValue;
-                          if (temp++ < 15.4 || temp++ == 15.4) {
-                            setState(() {
-                              _zoomValue++;
-                              if (latlnglist.isEmpty) {
-                                mapController.move(center, _zoomValue);
-                              } else {
-                                var latlng = LatLng(latlnglist.last.latitude,
-                                    latlnglist.last.longitude);
-                                mapController.move(latlng, _zoomValue);
-                              }
-                            });
-                          }
-                        },
-                        child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black54, blurRadius: 5)
-                                ],
-                                borderRadius: BorderRadius.circular(100)),
-                            child: Icon(
-                              CupertinoIcons.plus,
-                              size: 16,
-                            )),
-                      ),
-                    ],
-                  ),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

@@ -18,7 +18,7 @@ class Constants {
   static String USER_TOKEN = "";
   static EmployeeModel employee = EmployeeModel();
   static OrganizationModel organization = OrganizationModel();
-
+// http://a.tile.openstreetmap.org/{z}/{x}/{y}.png
   static setMapIP(String ip) {
     if (ip.contains(RegExp('[a-zA-Z]'))) {
       mapURL = "http://$ip/{z}/{x}/{y}.png";

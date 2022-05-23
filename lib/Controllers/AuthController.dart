@@ -29,29 +29,46 @@ class AuthController {
           var json = response.data['data'];
           Constants.USER_TOKEN = json['token'];
           Constants.setAuthentication();
-          print(Constants.USER_TOKEN);
           LocalStorage.setCredentials(email, password, json['_id']);
           getUserData();
           if (json['role'] == "organization") {
+            if (json['isConfirmed'].toString() == "false") {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => CupertinoAlertDialog(
+                        title: Text("You are forbidden to log in"),
+                        content: Text("Note: " +
+                            json['unactive_msg'].toString() +
+                            "\nFor further queries contact with ELMS admin."),
+                        actions: [
+                          CupertinoDialogAction(
+                              child: Text("OK"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              }),
+                        ],
+                      ));
+              return;
+            }
             EmployeeLocationController employeeLocationController =
                 EmployeeLocationController();
-            cron.schedule(new Schedule.parse('*/1 * * * *'), () async {
-              print(
-                  "_______________________________________\nOrganization\n_______________________________________");
-              employeeLocationController.getEmployeesLastLocation();
-            });
+            // cron.schedule(new Schedule.parse('*/1 * * * *'), () async {
+            //   print(
+            //       "_______________________________________\nOrganization\n_______________________________________");
+            //   employeeLocationController.getEmployeesLastLocation();
+            // });
             OrganizationController organizationController =
                 OrganizationController();
             Constants.organization = OrganizationModel.fromJson(json);
             Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => OrganizationNav(0)),
+                MaterialPageRoute(builder: (context) => OrganizationNav(1)),
                 (route) => false);
           } else {
-            cron.schedule(new Schedule.parse('*/1 * * * *'), () async {
-              print(
-                  "_______________________________________\nEmployee\n_______________________________________");
-            });
+            // cron.schedule(new Schedule.parse('*/1 * * * *'), () async {
+            //   print(
+            //       "_______________________________________\nEmployee\n_______________________________________");
+            // });
             print(json);
             if (json['status'].toString() == "false") {
               showDialog(
@@ -71,19 +88,24 @@ class AuthController {
                       ));
             } else {
               EmployeeController employeeController = EmployeeController();
-              employeeController.employeeDetail();
+              await employeeController.employeeDetail();
               Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => EmployeeNav(1)),
                   (route) => false);
             }
           }
+        } else {
+          Constants.showSnackBar(
+              context, "Invalid username or password", false);
         }
       } catch (ex) {
         print(ex.toString());
+        Constants.showSnackBar(context, "Invalid username or password", false);
       }
     } catch (ex) {
       print(ex);
+      Constants.showSnackBar(context, "Invalid username or password", false);
     }
   }
 

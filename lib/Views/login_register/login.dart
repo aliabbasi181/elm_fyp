@@ -85,7 +85,7 @@ class _LoginState extends State<Login> {
                             onTap: () {},
                             child: InkWell(
                               onTap: () async {
-                                if (email.text == "admin" &&
+                                if (email.text == "admin@elms.com" &&
                                     password.text == "admin") {
                                   LocalStorage.setCredentials(
                                       "admin", "admin", "0");
@@ -95,10 +95,10 @@ class _LoginState extends State<Login> {
                                           builder: (context) => AdminNav()),
                                       (route) => false);
                                 } else {
-                                  email.text = "admin@mtbc.com";
-                                  password.text = "admin1234";
-                                  // email.text = "abubakrbanti@gmail.com";
+                                  // email.text = "admin@mtbc.com";
                                   // password.text = "admin1234";
+                                  email.text = "abubakrbanti@gmail.com";
+                                  password.text = "admin1234";
                                   applicationBloc.login(
                                       context, email.text, password.text);
                                 }

@@ -6,6 +6,7 @@ import 'package:elm_fyp/Views/constants.dart';
 import 'package:elm_fyp/local_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:http/http.dart' as http;
 
 class EmployeeLocationController {
   Future<dynamic> saveUserLocation(
@@ -54,7 +55,6 @@ class EmployeeLocationController {
     try {
       Map<String, dynamic> payload = {"date": date, "employee": id};
       var responce = await Dio().post(url, data: payload);
-      print(responce.data);
       return responce.data['data'][0];
     } catch (ex) {}
   }
@@ -105,22 +105,22 @@ class EmployeeLocationController {
         "to_date": dateTo,
       };
       var responce = await Dio().post(url, data: payload);
-      print(responce.data);
       return responce.data['data'];
     } catch (ex) {}
   }
 
-  getEmployeesLastLocation() async {
+  getEmployeesLastLocation(String date) async {
     String url = Constants.baseURL + "/employee/get-employees-last-location";
     try {
-      var responce = await Dio()
-          .get(url, options: Options(headers: Constants.requestHeaders));
+      Map<String, dynamic> payload = {"date": date};
+      var responce = await Dio().post(url,
+          options: Options(headers: Constants.requestHeaders), data: payload);
       for (var item in responce.data['data']) {
         if (item['inFence'].toString() == "false") {
           EmployeeController employeeController = EmployeeController();
           var res =
               await employeeController.employeeDetailById(item['employeeId']);
-          print(res['name'] + " is out of fence");
+          //print(res['name'] + " is out of fence");
         }
       }
       return responce.data['data'];
@@ -133,6 +133,15 @@ class EmployeeLocationController {
     try {
       Map<String, dynamic> payload = {"id": id, "date": date};
       print(payload);
+      var responce = await Dio().post(url, data: payload);
+      return responce.data['data'];
+    } catch (ex) {}
+  }
+
+  Future<dynamic> getEmployeesAllLocations(String id) async {
+    String url = Constants.baseURL + "/employee/get-employee-all-locations";
+    try {
+      Map<String, dynamic> payload = {"id": id};
       var responce = await Dio().post(url, data: payload);
       return responce.data['data'];
     } catch (ex) {}

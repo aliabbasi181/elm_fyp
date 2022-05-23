@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:elm_fyp/SharedPreferences/local_storage.dart';
 import 'package:elm_fyp/Views/constants.dart';
 import 'package:elm_fyp/Views/employee/employee_history.dart';
 import 'package:elm_fyp/Views/employee/employee_notification.dart';
@@ -7,15 +8,6 @@ import 'package:elm_fyp/Views/employee/home.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:ionicons/ionicons.dart';
-
-List<Widget> _screens = <Widget>[
-  EmployeeHistory(
-    employeeId: "dsadfds",
-  ),
-  EmployeeHome(),
-  EmployeeNotification(),
-  EmployeeProfile()
-];
 
 int _selectedIndex = 1;
 
@@ -29,6 +21,15 @@ class EmployeeNav extends StatefulWidget {
 
 class _EmployeeNavState extends State<EmployeeNav> {
   late PageController _pageController;
+  String employeeId = "";
+  List<Widget> _screens = <Widget>[
+    EmployeeHistory(
+      employeeId: Constants.employee.sId.toString(),
+    ),
+    EmployeeHome(),
+    EmployeeNotification(),
+    EmployeeProfile()
+  ];
   Timer? timer;
   @override
   initState() {

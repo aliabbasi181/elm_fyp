@@ -25,6 +25,7 @@ class FenceController {
   Future<bool> createFence(String name, List<LatLng> points) async {
     String url = Constants.baseURL + "/geo/polygon/";
     try {
+      Map<String, dynamic> payload = {"name": name, "points": points};
       FenceModel polygon = FenceModel();
       List<Points> pointsP = [];
       polygon.name = name;
@@ -63,8 +64,9 @@ class FenceController {
       var response = await http.post(Uri.parse(url),
           body: payload, headers: Constants.requestHeaders);
       if (response.statusCode == 200) {
-        Constants.showSnackBar(
-            context, "Fence successfully assigned to employee", true);
+        var json = jsonDecode(response.body);
+        print(json);
+        Constants.showSnackBar(context, json['message'].toString(), true);
       } else {
         var json = jsonDecode(response.body);
         Constants.showSnackBar(context, json['message'].toString(), true);

@@ -191,7 +191,7 @@ class _EmployeeFenceDetailState extends State<EmployeeFenceDetail> {
                       InkWell(
                         onTap: () {
                           var temp = _zoomValue;
-                          if (temp++ < 16 || temp++ == 16) {
+                          if (temp++ < 14 || temp++ == 14) {
                             setState(() {
                               _zoomValue++;
                               mapController.move(center!, _zoomValue);

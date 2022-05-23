@@ -37,7 +37,7 @@ class _EmployeeDetailsState extends State<EmployeeDetails> {
   List<LatLng> fenceList = <LatLng>[];
   List<AssignedFenceModel> assignedFences = [];
   FenceModel todaysFence = FenceModel(name: "Loading...");
-  double _zoomValue = 15;
+  double _zoomValue = 14;
   EmployeeLocationModel employeeLocationModel = EmployeeLocationModel();
 
   _getTodayLocations() async {
@@ -188,12 +188,6 @@ class _EmployeeDetailsState extends State<EmployeeDetails> {
                           options: MapOptions(
                             center: center,
                             zoom: _zoomValue,
-                            onTap: (position, latlng) {
-                              print("${latlng.latitude},${latlng.longitude}");
-                              setState(() {
-                                latlnglist.add(latlng);
-                              });
-                            },
                           ),
                           layers: [
                             TileLayerOptions(
@@ -201,14 +195,14 @@ class _EmployeeDetailsState extends State<EmployeeDetails> {
                             ),
                             PolylineLayerOptions(polylines: [
                               Polyline(
-                                  color: Colors.red,
+                                  color: Colors.black,
                                   strokeWidth: 8,
                                   isDotted: true,
                                   points: latlnglist)
                             ]),
                             PolylineLayerOptions(polylines: [
                               Polyline(
-                                  color: Colors.black,
+                                  color: Constants.primaryColor,
                                   strokeWidth: 5,
                                   points: fenceList)
                             ]),
@@ -251,8 +245,9 @@ class _EmployeeDetailsState extends State<EmployeeDetails> {
                           children: [
                             InkWell(
                               onTap: () {
+                                print(_zoomValue);
                                 var temp = _zoomValue;
-                                if (temp++ < 16 || temp++ == 16) {
+                                if (temp++ < 14 || temp++ == 14) {
                                   setState(() {
                                     _zoomValue++;
                                     mapController.move(center, _zoomValue);

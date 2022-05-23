@@ -59,10 +59,10 @@ class _CreateFenceState extends State<CreateFence> {
                     height: Constants.screenWidth(context) * 0.010,
                   ),
                   Container(
-                    height: Constants.screenHeight(context) * 0.63,
+                    height: Constants.screenHeight(context) * 0.65,
                     width: Constants.screenWidth(context),
                     padding: const EdgeInsets.all(0),
-                    margin: const EdgeInsets.only(bottom: 5),
+                    margin: const EdgeInsets.only(bottom: 15),
                     decoration: BoxDecoration(
                       boxShadow: const [
                         BoxShadow(
@@ -72,28 +72,89 @@ class _CreateFenceState extends State<CreateFence> {
                       ],
                       color: Constants.primaryColor,
                     ),
-                    child: FlutterMap(
-                      mapController: mapController,
-                      options: MapOptions(
-                        center: center,
-                        zoom: _zoomValue,
-                        onTap: (position, latlng) {
-                          print("${latlng.latitude},${latlng.longitude}");
-                          setState(() {
-                            latlnglist.add(latlng);
-                          });
-                        },
-                      ),
-                      layers: [
-                        TileLayerOptions(
-                          urlTemplate: Constants.mapURL,
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Container(
+                            height: Constants.screenHeight(context) * 0.65,
+                            width: Constants.screenWidth(context),
+                            child: FlutterMap(
+                              mapController: mapController,
+                              options: MapOptions(
+                                center: center,
+                                zoom: _zoomValue,
+                                onTap: (position, latlng) {
+                                  print(
+                                      "${latlng.latitude},${latlng.longitude}");
+                                  setState(() {
+                                    latlnglist.add(latlng);
+                                  });
+                                },
+                              ),
+                              layers: [
+                                TileLayerOptions(
+                                  urlTemplate: Constants.mapURL,
+                                ),
+                                PolylineLayerOptions(polylines: [
+                                  Polyline(
+                                      color: Colors.red,
+                                      strokeWidth: 5,
+                                      points: latlnglist)
+                                ])
+                              ],
+                            ),
+                          ),
                         ),
-                        PolylineLayerOptions(polylines: [
-                          Polyline(
-                              color: Colors.red,
-                              strokeWidth: 5,
-                              points: latlnglist)
-                        ])
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Container(
+                            height: 60,
+                            width: 35,
+                            decoration: BoxDecoration(
+                                color: Constants.primaryColor,
+                                borderRadius: BorderRadius.circular(5)),
+                            margin:
+                                const EdgeInsets.only(bottom: 10, right: 10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    var temp = _zoomValue;
+                                    if (temp++ < 14 || temp++ == 14) {
+                                      setState(() {
+                                        _zoomValue++;
+                                        mapController.move(center, _zoomValue);
+                                      });
+                                    }
+                                  },
+                                  child: Icon(
+                                    CupertinoIcons.plus,
+                                    size: 24,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    var temp = _zoomValue;
+                                    if (temp-- > 5 || temp-- == 5) {
+                                      setState(() {
+                                        _zoomValue--;
+                                        mapController.move(center, _zoomValue);
+                                      });
+                                    }
+                                  },
+                                  child: Icon(
+                                    CupertinoIcons.minus,
+                                    size: 24,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -149,72 +210,6 @@ class _CreateFenceState extends State<CreateFence> {
                           "Redo",
                           style: FontStyle(16, Colors.white, FontWeight.w500),
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          var temp = _zoomValue;
-                          if (temp-- > 5 || temp-- == 5) {
-                            setState(() {
-                              _zoomValue--;
-                              mapController.move(center, _zoomValue);
-                            });
-                          }
-                        },
-                        child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black54, blurRadius: 5)
-                                ],
-                                borderRadius: BorderRadius.circular(100)),
-                            child: Icon(
-                              CupertinoIcons.minus,
-                              size: 16,
-                            )),
-                      ),
-                      Expanded(
-                        child: Slider(
-                            activeColor: Constants.primaryColor,
-                            min: 5,
-                            max: 15.4,
-                            label: "Zoom Level",
-                            value: _zoomValue,
-                            onChanged: (value) {
-                              setState(() {
-                                _zoomValue = value;
-                                mapController.move(center, value);
-                              });
-                            }),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          var temp = _zoomValue;
-                          if (temp++ < 15.4 || temp++ == 15.4) {
-                            setState(() {
-                              _zoomValue++;
-                              mapController.move(center, _zoomValue);
-                            });
-                          }
-                        },
-                        child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black54, blurRadius: 5)
-                                ],
-                                borderRadius: BorderRadius.circular(100)),
-                            child: Icon(
-                              CupertinoIcons.plus,
-                              size: 16,
-                            )),
                       ),
                     ],
                   ),

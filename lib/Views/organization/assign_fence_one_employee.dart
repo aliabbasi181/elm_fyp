@@ -156,7 +156,7 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                                 InkWell(
                                   onTap: () {
                                     var temp = _zoomValue;
-                                    if (temp++ < 16 || temp++ == 16) {
+                                    if (temp++ < 14 || temp++ == 14) {
                                       setState(() {
                                         _zoomValue++;
                                         mapController.move(center, _zoomValue);
@@ -274,37 +274,36 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       InkWell(
-                        onTap: () {
+                        onTap: () async {
                           var today = DateTime.now();
-                          setState(() {
-                            dateinstringFrom =
-                                '${today.day}/${today.month}/${today.year}';
-                            showCupertinoModalPopup(
-                                context: context,
-                                builder: (context) => CupertinoActionSheet(
-                                      actions: [
-                                        SizedBox(
-                                          height: 180,
-                                          child: CupertinoDatePicker(
-                                            minimumDate: DateTime.now(),
-                                            maximumDate: DateTime(2030),
-                                            onDateTimeChanged: (date) {
-                                              dateinstringFrom =
-                                                  '${date.day}/${date.month}/${date.year}';
-                                            },
-                                            mode: CupertinoDatePickerMode.date,
-                                            initialDateTime: DateTime.now(),
-                                          ),
-                                        )
-                                      ],
-                                      cancelButton: CupertinoActionSheetAction(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text("Done"),
-                                      ),
-                                    ));
-                          });
+                          dateinstringFrom =
+                              '${today.day}/${today.month}/${today.year}';
+                          await showCupertinoModalPopup(
+                              context: context,
+                              builder: (context) => CupertinoActionSheet(
+                                    actions: [
+                                      SizedBox(
+                                        height: 180,
+                                        child: CupertinoDatePicker(
+                                          minimumDate: DateTime.now(),
+                                          maximumDate: DateTime(2030),
+                                          onDateTimeChanged: (date) {
+                                            dateinstringFrom =
+                                                '${date.day}/${date.month}/${date.year}';
+                                          },
+                                          mode: CupertinoDatePickerMode.date,
+                                          initialDateTime: DateTime.now(),
+                                        ),
+                                      )
+                                    ],
+                                    cancelButton: CupertinoActionSheetAction(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text("Done"),
+                                    ),
+                                  ));
+                          setState(() {});
                         },
                         child: Container(
                           width: Constants.screenWidth(context) * 0.15,
@@ -340,11 +339,11 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                       ),
                       const Text("---"),
                       InkWell(
-                        onTap: () {
+                        onTap: () async {
                           var today = DateTime.now();
                           dateinstringTo =
                               '${today.day}/${today.month}/${today.year}';
-                          showCupertinoModalPopup(
+                          await showCupertinoModalPopup(
                               context: context,
                               builder: (context) => CupertinoActionSheet(
                                     actions: [
@@ -421,17 +420,17 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       InkWell(
-                        onTap: () {
+                        onTap: () async {
                           var today = DateTime.now();
                           fromTime = '${today.hour}:${today.minute}';
-                          showCupertinoModalPopup(
+                          await showCupertinoModalPopup(
                               context: context,
                               builder: (context) => CupertinoActionSheet(
                                     actions: [
                                       SizedBox(
                                         height: 180,
                                         child: CupertinoDatePicker(
-                                          minimumDate: DateTime.now(),
+                                          //minimumDate: DateTime.now(),
                                           maximumDate: DateTime(2030),
                                           onDateTimeChanged: (time) {
                                             setState(() {
@@ -482,17 +481,17 @@ class _AssignFenceOneEmployeeState extends State<AssignFenceOneEmployee> {
                       ),
                       const Text("---"),
                       InkWell(
-                        onTap: () {
+                        onTap: () async {
                           var today = DateTime.now();
                           toTime = '${today.hour}:${today.minute}';
-                          showCupertinoModalPopup(
+                          await showCupertinoModalPopup(
                               context: context,
                               builder: (context) => CupertinoActionSheet(
                                     actions: [
                                       SizedBox(
                                         height: 180,
                                         child: CupertinoDatePicker(
-                                          minimumDate: DateTime.now(),
+                                          //minimumDate: DateTime.now(),
                                           maximumDate: DateTime(2030),
                                           onDateTimeChanged: (time) {
                                             setState(() {

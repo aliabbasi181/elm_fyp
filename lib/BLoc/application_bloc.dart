@@ -165,8 +165,8 @@ class ApplicationBloc with ChangeNotifier {
             dateFrom, dateTo, timeFrom, timeTo, id);
   }
 
-  Future<dynamic> getEmployeesLastLocation() async {
-    return await employeeLocationController.getEmployeesLastLocation();
+  Future<dynamic> getEmployeesLastLocation(String date) async {
+    return await employeeLocationController.getEmployeesLastLocation(date);
   }
 
   Future<dynamic> getEmployeesLocationOnFenceId(String id, String date) async {
@@ -176,5 +176,9 @@ class ApplicationBloc with ChangeNotifier {
 
   Future<dynamic> getEmployeeDetailById(String id) async {
     return await employeeController.employeeDetailById(id);
+  }
+
+  Future<dynamic> getEmployeesAllLocations(String id) async {
+    return await employeeLocationController.getEmployeesAllLocations(id);
   }
 }

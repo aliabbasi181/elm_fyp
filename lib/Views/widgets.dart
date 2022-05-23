@@ -25,6 +25,7 @@ class _InputFieldState extends State<InputField> {
       margin: const EdgeInsets.only(bottom: 5),
       padding: const EdgeInsets.fromLTRB(15, 1, 10, 1),
       child: TextField(
+        autocorrect: false,
         controller: widget.controller,
         cursorColor: Constants.primaryColor,
         style: FontStyle(18, Colors.black87, FontWeight.w400),
