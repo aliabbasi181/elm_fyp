@@ -292,6 +292,7 @@ class _EmployeeDetailsState extends State<EmployeeDetails> {
                       for (var item in assignedFences) {
                         var data = await applicationBloc
                             .getFenceById(item.region.toString());
+                        print(data);
                         if (data != null) {
                           fences.add(FenceModel.fromJson(data));
                         }

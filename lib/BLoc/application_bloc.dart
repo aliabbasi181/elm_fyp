@@ -181,4 +181,24 @@ class ApplicationBloc with ChangeNotifier {
   Future<dynamic> getEmployeesAllLocations(String id) async {
     return await employeeLocationController.getEmployeesAllLocations(id);
   }
+
+  Future<dynamic> getEmployeesAssignedFence(String id) async {
+    return await fenceController.getEmployeesAssignedFence(id);
+  }
+
+  Future<dynamic> getFenceHistory(String id) async {
+    return await fenceController.getFenceHistory(id);
+  }
+
+  Future<bool> updateFence(String name, List<LatLng> points, var id) async {
+    return await fenceController.updateFence(name, points, id);
+  }
+
+  Future<bool> updateOrganization(OrganizationModel organization) async {
+    return await authController.updateOrganization(organization);
+  }
+
+  Future<bool> updateEmployee(EmployeeModel employee) async {
+    return await employeeController.updateEmployee(employee);
+  }
 }

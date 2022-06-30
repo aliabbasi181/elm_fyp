@@ -140,6 +140,11 @@ class _EmployeeProfileState extends State<EmployeeProfile> {
                                         body:
                                             Constants.employee.role.toString(),
                                       ),
+                                      UserDetailRow(
+                                        heading: "Organization",
+                                        body: Constants.rganizationName
+                                            .toString(),
+                                      ),
                                     ],
                                   ))
                             ],

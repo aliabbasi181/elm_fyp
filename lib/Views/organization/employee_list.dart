@@ -112,7 +112,7 @@ class _OrganizationsListState extends State<EmployeeList> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Org: Employee Location Management",
+                            Text("Org: ${Constants.organization.name}",
                                 textAlign: TextAlign.start,
                                 style: FontStyle(
                                     14, Colors.white, FontWeight.w400)),

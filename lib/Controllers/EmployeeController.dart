@@ -61,7 +61,10 @@ class EmployeeController {
       var response = await Dio()
           .get(url, options: Options(headers: Constants.requestHeaders));
       if (response.statusCode == 200) {
-        Constants.employee = EmployeeModel.fromJson(response.data['data']);
+        Constants.employee =
+            EmployeeModel.fromJson(response.data['data']['emp']);
+        Constants.rganizationName =
+            response.data['data']['org']['name'].toString();
       }
     } catch (ex) {
       print(ex.toString());
@@ -97,5 +100,28 @@ class EmployeeController {
       }
     } catch (ex) {}
     return organization;
+  }
+
+  Future<bool> updateEmployee(EmployeeModel employee) async {
+    print("object");
+    try {
+      String url = Constants.baseURL + "/employee/employee-update";
+      var payload = {
+        'name': employee.name,
+        'email': employee.email,
+        'phone': employee.phone,
+        'designation': employee.designation,
+        'cnic': employee.cnic
+      };
+      var response = await Dio().post(url,
+          data: payload, options: Options(headers: Constants.requestHeaders));
+      print(response.data);
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (ex) {
+      return false;
+    }
+    return false;
   }
 }

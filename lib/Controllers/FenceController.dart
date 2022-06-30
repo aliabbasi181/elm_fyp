@@ -114,4 +114,46 @@ class FenceController {
       return responce.data['data'];
     } catch (ex) {}
   }
+
+  Future<dynamic> getEmployeesAssignedFence(String id) async {
+    String url =
+        Constants.baseURL + "/geo/polygon/get-employees-assigned-fence";
+    try {
+      var responce = await Dio().post(url,
+          options: Options(headers: Constants.requestHeaders),
+          data: {"id": id});
+      print(responce.data);
+      return responce.data['data'];
+    } catch (ex) {}
+  }
+
+  Future<dynamic> getFenceHistory(String id) async {
+    String url = Constants.baseURL + "/employee/fence-history";
+    try {
+      var responce = await Dio().post(url, data: {"id": id});
+      print(responce.data);
+      return responce.data['data'];
+    } catch (ex) {}
+  }
+
+  Future<bool> updateFence(String name, List<LatLng> points, var id) async {
+    String url = Constants.baseURL + "/geo/polygon/update";
+    List<Map<String, dynamic>> pointsJson = [];
+    for (var item in points) {
+      pointsJson.add({'lat': item.latitude, 'lng': item.longitude});
+    }
+    var payload = {'id': id, 'name': name, 'points': pointsJson};
+    try {
+      var responce = await Dio().post(url,
+          data: payload, options: Options(headers: Constants.requestHeaders));
+      print(responce.data);
+      if (responce.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (ex) {
+      return false;
+    }
+  }
 }

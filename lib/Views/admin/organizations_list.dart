@@ -590,7 +590,9 @@ class _OrganizationsListState extends State<OrganizationsList> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => AddOrganization()));
+                          builder: (context) => AddOrganization(
+                                user: "admin",
+                              )));
                 },
               ),
             ],

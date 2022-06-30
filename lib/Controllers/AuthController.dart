@@ -125,4 +125,26 @@ class AuthController {
       print(ex.toString());
     }
   }
+
+  Future<bool> updateOrganization(OrganizationModel organization) async {
+    print("object");
+    try {
+      String url = Constants.baseURL + "/auth/update-organization";
+      var payload = {
+        'name': organization.name,
+        'email': organization.email,
+        'phone': organization.phone,
+        'address': organization.address
+      };
+      var response = await Dio().post(url,
+          data: payload, options: Options(headers: Constants.requestHeaders));
+      print(response.data);
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (ex) {
+      return false;
+    }
+    return false;
+  }
 }

@@ -753,10 +753,12 @@ class _PickEmployeesState extends State<PickEmployees> {
                                 Checkbox(
                                   value: isCheck[index],
                                   onChanged: (value) {
+                                    isCheck[index] = value!;
                                     setState(() {
-                                      isCheck[index] = value!;
+                                      widget.selectedEmployees
+                                          .add(employees[index]);
                                     });
-                                    if (!value!) {
+                                    if (!value) {
                                       widget.selectedEmployees.removeWhere(
                                           (element) =>
                                               element.sId ==

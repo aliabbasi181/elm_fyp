@@ -39,7 +39,7 @@ class _EmployeeHomeState extends State<EmployeeHome> {
   String pickFence = "Select Location";
   List<AssignedFenceModel> assignedFences = [];
   FenceModel todaysFence = FenceModel(name: "Loading...");
-  double _zoomValue = 14;
+  double _zoomValue = 13;
   EmployeeLocationModel employeeLocationModel = EmployeeLocationModel();
   @override
   void initState() {
@@ -145,7 +145,7 @@ class _EmployeeHomeState extends State<EmployeeHome> {
         lng = lng / todaysFence.points!.length;
         center = LatLng(lat, lng);
       }
-      mapController.move(LatLng(lat, lng), 14.5);
+      //mapController.move(LatLng(lat, lng), 14.5);
     } else {
       print("no fence assigned for today");
     }
@@ -241,66 +241,66 @@ class _EmployeeHomeState extends State<EmployeeHome> {
                           child: Container(
                             height: Constants.screenHeight(context) * 0.52,
                             width: Constants.screenWidth(context),
-                            child: FlutterMap(
-                              mapController: mapController,
-                              options: MapOptions(
-                                center: center,
-                                zoom: _zoomValue,
-                                onTap: (position, latlng) async {
-                                  var today = DateTime.now();
-                                  var dateInString =
-                                      '${today.day}/${today.month}/${today.year}';
-                                  var timeInString =
-                                      '${today.hour}:${today.minute}';
-                                  await applicationBloc.saveUserLocation(latlng,
-                                      dateInString, timeInString, context);
-                                  setState(() {
-                                    latlnglist.add(LatLng(
-                                        latlng.latitude, latlng.longitude));
-                                  });
-                                },
-                              ),
-                              layers: [
-                                TileLayerOptions(
-                                  urlTemplate: Constants.mapURL,
-                                ),
-                                PolylineLayerOptions(polylines: [
-                                  Polyline(
-                                      color: Constants.primaryColor,
-                                      strokeWidth: 8,
-                                      isDotted: true,
-                                      points: latlnglist)
-                                ]),
-                                PolylineLayerOptions(polylines: [
-                                  Polyline(
-                                      color: Colors.black,
-                                      strokeWidth: 5,
-                                      points: fenceList)
-                                ]),
-                                MarkerLayerOptions(
-                                  markers: [
-                                    Marker(
-                                      point: latlnglist.isNotEmpty
-                                          ? latlnglist.last
-                                          : LatLng(0, 0),
-                                      builder: (ctx) => Container(
-                                        decoration:
-                                            const BoxDecoration(boxShadow: [
-                                          BoxShadow(
-                                              color: Colors.black54,
-                                              blurRadius: 10),
-                                        ]),
-                                        child: const Icon(
-                                          Icons.circle_rounded,
-                                          size: 20,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                            // child: FlutterMap(
+                            //   mapController: mapController,
+                            //   options: MapOptions(
+                            //     center: center,
+                            //     zoom: _zoomValue,
+                            //     onTap: (position, latlng) async {
+                            //       var today = DateTime.now();
+                            //       var dateInString =
+                            //           '${today.day}/${today.month}/${today.year}';
+                            //       var timeInString =
+                            //           '${today.hour}:${today.minute}';
+                            //       await applicationBloc.saveUserLocation(latlng,
+                            //           dateInString, timeInString, context);
+                            //       setState(() {
+                            //         latlnglist.add(LatLng(
+                            //             latlng.latitude, latlng.longitude));
+                            //       });
+                            //     },
+                            //   ),
+                            //   layers: [
+                            //     TileLayerOptions(
+                            //       urlTemplate: Constants.mapURL,
+                            //     ),
+                            //     PolylineLayerOptions(polylines: [
+                            //       Polyline(
+                            //           color: Constants.primaryColor,
+                            //           strokeWidth: 8,
+                            //           isDotted: true,
+                            //           points: latlnglist)
+                            //     ]),
+                            //     PolylineLayerOptions(polylines: [
+                            //       Polyline(
+                            //           color: Colors.black,
+                            //           strokeWidth: 5,
+                            //           points: fenceList)
+                            //     ]),
+                            //     MarkerLayerOptions(
+                            //       markers: [
+                            //         Marker(
+                            //           point: latlnglist.isNotEmpty
+                            //               ? latlnglist.last
+                            //               : LatLng(0, 0),
+                            //           builder: (ctx) => Container(
+                            //             decoration:
+                            //                 const BoxDecoration(boxShadow: [
+                            //               BoxShadow(
+                            //                   color: Colors.black54,
+                            //                   blurRadius: 10),
+                            //             ]),
+                            //             child: const Icon(
+                            //               Icons.circle_rounded,
+                            //               size: 20,
+                            //               color: Colors.black,
+                            //             ),
+                            //           ),
+                            //         ),
+                            //       ],
+                            //     ),
+                            //   ],
+                            // ),
                           ),
                         ),
                         Align(
@@ -414,7 +414,8 @@ class _EmployeeHomeState extends State<EmployeeHome> {
                                     builder: (context) => EmployeeLocationsLog(
                                         name:
                                             Constants.employee.name.toString(),
-                                        assignedFence: "sgadfg",
+                                        assignedFence:
+                                            todaysFence.name.toString(),
                                         employeeLocationModel:
                                             employeeLocationModel)));
                           }

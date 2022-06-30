@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:elm_fyp/BLoc/application_bloc.dart';
 import 'package:elm_fyp/Models/EmployeeModel.dart';
+import 'package:elm_fyp/Models/EmpoloyeeLocationModel.dart';
 import 'package:elm_fyp/Models/FenceModel.dart';
 import 'package:elm_fyp/Views/constants.dart';
 import 'package:elm_fyp/Views/organization/employee_details/employee_details.dart';
@@ -49,7 +50,7 @@ class _FenceDetailState extends State<FenceDetail> {
     allLines.add(Polyline(
         points: latlnglist, strokeWidth: 5, color: Constants.primaryColor));
     getLocations();
-    timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
+    timer = Timer.periodic(Duration(seconds: 50), (Timer t) {
       getLocations();
     });
   }
@@ -171,25 +172,28 @@ class _FenceDetailState extends State<FenceDetail> {
                                       builder: (context) =>
                                           UpdateFence(fence: widget.fence)));
                             },
-                            icon: const Icon(Icons.edit_location_alt_rounded),
+                            icon: const Icon(
+                              Icons.edit_location_alt_rounded,
+                              size: 20,
+                            ),
                             label: Text("Edit",
                                 style: FontStyle(
-                                    16, Colors.white, FontWeight.w500)),
+                                    14, Colors.white, FontWeight.w500)),
                           ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: () async {},
-                            style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.resolveWith(
-                                        (states) => Constants.primaryColor)),
-                            icon: const Icon(Icons.delete_outline_rounded),
-                            label: Text("Delete",
-                                style: FontStyle(
-                                    16, Colors.white, FontWeight.w500)),
-                          ),
+                          // const SizedBox(
+                          //   width: 10,
+                          // ),
+                          // ElevatedButton.icon(
+                          //   onPressed: () async {},
+                          //   style: ButtonStyle(
+                          //       backgroundColor:
+                          //           MaterialStateProperty.resolveWith(
+                          //               (states) => Constants.primaryColor)),
+                          //   icon: const Icon(Icons.delete_outline_rounded),
+                          //   label: Text("Delete",
+                          //       style: FontStyle(
+                          //           16, Colors.white, FontWeight.w500)),
+                          // ),
                         ],
                       )
                     ],
@@ -301,7 +305,7 @@ class _FenceDetailState extends State<FenceDetail> {
                     ),
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       InkWell(
                         onTap: () {
@@ -319,8 +323,43 @@ class _FenceDetailState extends State<FenceDetail> {
                                           borderRadius: BorderRadius.only(
                                               topLeft: Radius.circular(20),
                                               topRight: Radius.circular(20))),
-                                      child:
-                                          ViewEmployeesOverview(fenceId: "")),
+                                      child: ViewHistory(
+                                          fenceId:
+                                              widget.fence.sId.toString())),
+                                );
+                              });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 4, horizontal: 10),
+                          decoration: BoxDecoration(
+                              color: Constants.primaryColor,
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Text(
+                            "View history",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          showModalBottomSheet(
+                              context: context,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) {
+                                return SafeArea(
+                                  bottom: false,
+                                  child: Container(
+                                      width: Constants.screenWidth(context),
+                                      height: Constants.screenHeight(context),
+                                      decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(20),
+                                              topRight: Radius.circular(20))),
+                                      child: ViewEmployeesOverview(
+                                          fenceId:
+                                              widget.fence.sId.toString())),
                                 );
                               });
                         },
@@ -419,18 +458,25 @@ class ViewEmployeesOverview extends StatefulWidget {
 
 class _ViewEmployeesOverviewState extends State<ViewEmployeesOverview> {
   //List<EmployeeLocationModel> locations = [];
-  List<Map<String, dynamic>> locations = [];
+  List<Map<String, dynamic>> data = [];
   @override
   void initState() {
     _getEmployees();
+    print(widget.fenceId);
     super.initState();
   }
 
   _getEmployees() async {
     final applicationBloc =
         Provider.of<ApplicationBloc>(context, listen: false);
-    locations.clear();
-    setState(() {});
+    var temp = await applicationBloc.getEmployeesAssignedFence(widget.fenceId);
+    if (temp.length > 0) {
+      for (var item in temp) {
+        data.add(
+            {"employee": item['employee'], "assignFence": item['assignFence']});
+      }
+      setState(() {});
+    }
   }
 
   @override
@@ -453,49 +499,158 @@ class _ViewEmployeesOverviewState extends State<ViewEmployeesOverview> {
                 ),
               ],
             ),
-            Container(
-              height: Constants.screenHeight(context) * 0.45,
-              child: ListView.builder(
-                  itemCount: 3,
-                  padding: const EdgeInsets.only(top: 10),
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () {
-                        Navigator.pop(context, locations[index]);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 5),
-                        width: Constants.screenWidth(context),
-                        color: Colors.white,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Name",
-                                style: FontStyle(18, Constants.primaryColor,
-                                    FontWeight.w500)),
-                            RichText(
-                                text: TextSpan(
-                                    text: "Date: ",
-                                    style: FontStyle(
-                                        12, Colors.black, FontWeight.w500),
-                                    children: [
-                                  TextSpan(
-                                      text: "  12/5/2022",
+            Expanded(
+              child: Container(
+                //height: Constants.screenHeight(context) * 0.45,
+                child: ListView.builder(
+                    itemCount: data.length,
+                    padding: const EdgeInsets.only(top: 10),
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {},
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          width: Constants.screenWidth(context),
+                          color: Colors.white,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(data[index]['employee']['name'],
+                                  style: FontStyle(18, Constants.primaryColor,
+                                      FontWeight.w500)),
+                              RichText(
+                                  text: TextSpan(
+                                      text: "Date: ",
                                       style: FontStyle(
-                                          12,
-                                          Colors.black.withOpacity(0.5),
-                                          FontWeight.w400)),
-                                ])),
-                            const Divider(
-                              color: Color(0XFFFeceef0),
-                              thickness: 1,
-                              height: 5,
-                            ),
-                          ],
+                                          12, Colors.black, FontWeight.w500),
+                                      children: [
+                                    TextSpan(
+                                        text:
+                                            "  ${data[index]['assignFence']['dateFrom']} - ${data[index]['assignFence']['dateTo']}",
+                                        style: FontStyle(
+                                            12,
+                                            Colors.black.withOpacity(0.5),
+                                            FontWeight.w400)),
+                                  ])),
+                              const Divider(
+                                color: Color(0XFFFeceef0),
+                                thickness: 1,
+                                height: 5,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  }),
+                      );
+                    }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ViewHistory extends StatefulWidget {
+  String fenceId;
+  ViewHistory({Key? key, required this.fenceId}) : super(key: key);
+
+  @override
+  State<ViewHistory> createState() => _ViewHistoryState();
+}
+
+class _ViewHistoryState extends State<ViewHistory> {
+  List<Map<String, dynamic>> data = [];
+
+  _fetchData() async {
+    final applicationBloc =
+        Provider.of<ApplicationBloc>(context, listen: false);
+    var temp = await applicationBloc.getFenceHistory(widget.fenceId);
+    EmployeeModel employeeModel;
+    EmployeeLocationModel employeeLocationModel;
+    if (temp != null) {
+      for (var item in temp) {
+        var emp = await applicationBloc
+            .getEmployeeDetailById(item['employee'].toString());
+        employeeModel = EmployeeModel.fromJson(emp);
+        employeeLocationModel = EmployeeLocationModel.fromJson(item);
+        data.add(
+            {"employee": employeeModel, "location": employeeLocationModel});
+      }
+    }
+
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    _fetchData();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Fence history',
+                  style: TextStyle(
+                      fontFamily: "Montserrat",
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+            Expanded(
+              child: Container(
+                //height: Constants.screenHeight(context) * 0.45,
+                child: ListView.builder(
+                    itemCount: data.length,
+                    padding: const EdgeInsets.only(top: 10),
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {},
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          width: Constants.screenWidth(context),
+                          color: Colors.white,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(data[index]['location'].date,
+                                  style: FontStyle(18, Constants.primaryColor,
+                                      FontWeight.w500)),
+                              RichText(
+                                  text: TextSpan(
+                                      text: "Total employees: ",
+                                      style: FontStyle(
+                                          12, Colors.black, FontWeight.w500),
+                                      children: [
+                                    TextSpan(
+                                        text: "6",
+                                        style: FontStyle(
+                                            12,
+                                            Colors.black.withOpacity(0.5),
+                                            FontWeight.w400)),
+                                  ])),
+                              const Divider(
+                                color: Color(0XFFFeceef0),
+                                thickness: 1,
+                                height: 5,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+              ),
             ),
           ],
         ),

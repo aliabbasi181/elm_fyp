@@ -97,8 +97,8 @@ class _LoginState extends State<Login> {
                                 } else {
                                   // email.text = "admin@mtbc.com";
                                   // password.text = "admin1234";
-                                  email.text = "abubakrbanti@gmail.com";
-                                  password.text = "admin1234";
+                                  //email.text = "abubakrbanti@gmail.com";
+                                  //password.text = "admin1234";
                                   applicationBloc.login(
                                       context, email.text, password.text);
                                 }

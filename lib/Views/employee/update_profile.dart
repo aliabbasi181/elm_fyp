@@ -1,7 +1,11 @@
+import 'package:elm_fyp/BLoc/application_bloc.dart';
+import 'package:elm_fyp/Models/EmployeeModel.dart';
 import 'package:elm_fyp/Views/constants.dart';
 import 'package:elm_fyp/Views/widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:provider/provider.dart';
 
 class EmployeeProfileUpdate extends StatefulWidget {
   const EmployeeProfileUpdate({Key? key}) : super(key: key);
@@ -104,8 +108,100 @@ class _EmployeeProfileUpdateState extends State<EmployeeProfileUpdate> {
                         icon: Ionicons.key,
                         controller: password),
                     InkWell(
-                      onTap: () {
-                        //authServices.login(email.text, password.text);
+                      onTap: () async {
+                        switch (await showDialog(
+                            context: context,
+                            builder: (BuildContext context) =>
+                                CupertinoAlertDialog(
+                                  title: const Text("ALERT!"),
+                                  content: const Text(
+                                      "Are you sure you want to update this fence?"),
+                                  actions: [
+                                    CupertinoDialogAction(
+                                        child: const Text(
+                                          "Cancel",
+                                          style: TextStyle(
+                                              fontFamily: "Montserrat",
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop("No");
+                                        }),
+                                    CupertinoDialogAction(
+                                        child: const Text(
+                                          "UPDATE",
+                                          style: TextStyle(
+                                              color: Colors.red,
+                                              fontFamily: "Montserrat",
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop("UPDATE");
+                                        }),
+                                  ],
+                                ))) {
+                          case "UPDATE":
+                            final applicationBloc =
+                                Provider.of<ApplicationBloc>(context,
+                                    listen: false);
+                            EmployeeModel employeeModel = EmployeeModel(
+                                name: name.text,
+                                email: email.text,
+                                phone: phone.text,
+                                cnic: cnic.text,
+                                designation: designation.text);
+                            print("updating");
+                            if (await applicationBloc
+                                .updateEmployee(employeeModel)) {
+                              await showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      CupertinoAlertDialog(
+                                        title: const Text("Hurra!"),
+                                        content: const Text("Profile Updated"),
+                                        actions: [
+                                          CupertinoDialogAction(
+                                              child: const Text(
+                                                "Close",
+                                                style: TextStyle(
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              }),
+                                        ],
+                                      ));
+                            } else {
+                              await showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      CupertinoAlertDialog(
+                                        title: const Text("Alert!"),
+                                        content: const Text(
+                                            "Profile Updated Failed"),
+                                        actions: [
+                                          CupertinoDialogAction(
+                                              child: const Text(
+                                                "Close",
+                                                style: TextStyle(
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              }),
+                                        ],
+                                      ));
+                            }
+                            break;
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),

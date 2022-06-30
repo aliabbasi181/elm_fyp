@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cron/cron.dart';
 import 'package:elm_fyp/BLoc/application_bloc.dart';
@@ -12,6 +14,8 @@ import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 
 void main() async {
+  HttpOverrides.global = MyHttpOverrides();
+  //await LocalStorage.removeUser();
   WidgetsFlutterBinding.ensureInitialized();
   try {
     AwesomeNotifications().initialize(null, [
@@ -85,4 +89,13 @@ Future<Position> _determinePosition() async {
   // When we reach here, permissions are granted and we can
   // continue accessing the position of the device.
   return await Geolocator.getCurrentPosition();
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
 }
